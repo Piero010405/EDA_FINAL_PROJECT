@@ -1,0 +1,2 @@
+﻿  Main.cpp
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\Test\TF_EDA\TF_EDA\Main.cpp(4,9): error C1083: Cannot open include file: 'boost/archive/binary_iarchive.hpp': No such file or directory
