@@ -74,6 +74,10 @@
     <ExternalIncludePath>C:\boost_1_85_0;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>C:\boost_1_85_0\stage\x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ExternalIncludePath>C:\boost_1_85_0;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>C:\boost_1_85_0\stage\x64\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -112,6 +116,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>libboost_serialization-vc143-mt-x64-1_85.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

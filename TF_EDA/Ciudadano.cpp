@@ -889,15 +889,15 @@ Ciudadano::Ciudadano(int id)
 
 void Ciudadano::imprimir()
 {
-    std::cout << "DNI: " << this->dni << std::endl;
-    std::cout << "Nombres: " << this->nombre << std::endl;
-    std::cout << "Apellidos: " << this->apellidos[0] << " " << this->apellidos[1] << std::endl;
-    std::cout << "Nacionalidad: " << this->nacionalidad << std::endl;
-    std::cout << "Lugar de Nacimiento: " << this->lugarNacimiento << std::endl;
-    std::cout << "Dirección: " << this->direccion << std::endl;
-    std::cout << "Teléfono: " << this->telefono << std::endl;
-    std::cout << "Email: " << this->email << std::endl;
-    std::cout << "Estado Civil: " << this->estadoCivil << std::endl;
+    std::cout << "\t\tDNI: " << this->dni << std::endl;
+    std::cout << "\t\tNombres: " << this->nombre << std::endl;
+    std::cout << "\t\tApellidos: " << this->apellidos[0] << " " << this->apellidos[1] << std::endl;
+    std::cout << "\t\tNacionalidad: " << this->nacionalidad << std::endl;
+    std::cout << "\t\tLugar de Nacimiento: " << this->lugarNacimiento << std::endl;
+    std::cout << "\t\tDirección: " << this->direccion << std::endl;
+    std::cout << "\t\tTeléfono: " << this->telefono << std::endl;
+    std::cout << "\t\tEmail: " << this->email << std::endl;
+    std::cout << "\t\tEstado Civil: " << this->estadoCivil << std::endl;
     std::cout << std::endl;
 }
 

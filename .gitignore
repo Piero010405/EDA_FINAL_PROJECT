@@ -1,0 +1,11 @@
+# Ignorar todos los archivos .dat
+*.dat
+
+# Ignorar todos los archivos y directorios dentro de la carpeta "logs"
+logs/*
+
+# Ignorar un archivo específico llamado "config.xml"
+config.xml
+
+.vs/
+.vs/*

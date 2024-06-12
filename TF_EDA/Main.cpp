@@ -15,6 +15,8 @@
 #include "Ciudadano.h"
 #include "CuckooHash.h"
 
+
+const std::string POSITIVO = "si";
 const int MAX_POBLACION = 99999999;
 const int POBLACION = 100000;
 const int NUM_TABLAS_CUCKOO = 3;
@@ -61,7 +63,7 @@ CuckooHashTable cargarTablaHash(const std::string& tablaHashFileName) {
     return tablaHash;
 }
 
-Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
+int formatearDni(std::string dni) {
     int id;
     try {
         id = std::stoi(dni);
@@ -69,12 +71,18 @@ Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciuda
     catch (const std::invalid_argument& e) {
         throw std::runtime_error("DNI inválido. Debe ser un número entero.");
     }
+    return id;
+}
+
+Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
+    int id = formatearDni(dni);
 
     // Buscar la direcci�n de memoria en la tabla hash
     std::pair<int, size_t> entry = tablaHash.buscar(id);
     std::cout << entry.first << std::endl;
     if (entry.first == -1) {
-        throw std::runtime_error("Ciudadano no encontrado");
+        throw std::runtime_error("\t\tCiudadano no encontrado...\n");
+        return;
     }
 
     size_t memoryAddress = entry.second;
@@ -100,7 +108,7 @@ Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciuda
     return ciudadano;
 }
 
-CuckooHashTable cargarDatos( const std::string& ciudadanosFileName, const std::string& tablaHashFileName) {
+CuckooHashTable cargarDatos(const std::string& ciudadanosFileName, const std::string& tablaHashFileName) {
     std::ifstream fileStream(tablaHashFileName, std::ios::binary);
 
     if (!fileStream.is_open()) {
@@ -130,14 +138,8 @@ std::string dniValido() {
     return dni;
 }
 
-int main() {
-    const std::string ciudadanosFileName = "ciudadanosFile.dat";
-    const std::string cuckooFileName = "cuckooFile.dat";
-
-    CuckooHashTable cuckooTable = cargarDatos(ciudadanosFileName, cuckooFileName);
-
-    //cuckooTable.mostrar();
-
+void buscarCiudadano(CuckooHashTable cuckooTable, std::string ciudadanosFileName) {
+    std::cout << "\t\t|| Buscar Ciudadano ||\n";
     std::string dni = dniValido();
 
     try {
@@ -147,5 +149,73 @@ int main() {
     catch (std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
     }
+}
+
+void eliminarCiudadano(CuckooHashTable cuckooTable, std::string ciudadanosFileName) {
+    std::cout << "\t\t|| Eliminar Ciudadano ||\n";
+    std::string dni = dniValido();
+    std::string rpt;
+
+    try {
+        Ciudadano ciudadano = buscarCiudadanoPorDNI(dni, ciudadanosFileName, cuckooTable);
+        ciudadano.imprimir();
+        std::cout << "\t\tEstas seguro de eliminar al ciudadano? [si/no]: ";
+        std::cin >> rpt;
+        std::transform(rpt.begin(), rpt.end(), rpt.begin(), std::tolower);
+        if (rpt == POSITIVO) {
+            cuckooTable.eliminar(formatearDni(dni));
+            std::cout << "\t\tCiudadano con DNI [" << dni << "] ha sido eliminado satisfactoriamente .../n";
+        }
+        else {
+            std::cout << "\t\tOperacion cancelada ... /n";
+        }
+        system("pause");
+        system("cls");
+    }
+    catch (std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+    }
+
+}
+
+void insertarCiudadano() {
+    std::cout << "\t\t|| Insertar Nuevo Ciudadano ||\n";
+
+}
+
+void salir() {
+    std::cout << "\n\n\t\tSalida del sistema....\n";
+}
+
+void menuPrincipal() {
+    const std::string ciudadanosFileName = "ciudadanosFile.dat";
+    const std::string cuckooFileName = "cuckooFile.dat";
+
+    // falta poner con punteros
+    CuckooHashTable cuckooTable = cargarDatos(ciudadanosFileName, cuckooFileName);
+
+    int opt = 0;
+    std::cout << "\t\t|||| Sistema de RENIEC Nacional ||||\n";
+    do
+    {
+        std::cout << "\t\t[*] Buscar Ciudadano .............. [1]\n";
+        std::cout << "\t\t[*] Eliminar Ciudadano ............ [2]\n";
+        std::cout << "\t\t[*] Insertar Nuevo Ciudadano ...... [3]\n";
+        std::cout << "\t\t[*] Salir ......................... [4]\n";
+        std::cout << "Seleccione una opcion                 [1-4]: ";
+        std::cin >> opt;
+        switch (opt)
+        {
+        case 1: system("cls"); buscarCiudadano(cuckooTable, ciudadanosFileName); break;
+        case 2: system("cls"); eliminarCiudadano(cuckooTable, ciudadanosFileName); break;
+        case 3: system("cls"); insertarCiudadano(); break;
+        case 4: salir(); exit(0); break;
+        default: std::cout << "\t\tIngrese una opcion válida entre [1-4]\n";
+        }
+    } while (opt != 4);
+}
+
+int main() {
+    menuPrincipal();
     return 0;
 }
