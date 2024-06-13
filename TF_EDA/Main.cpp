@@ -60,39 +60,6 @@ CuckooHashTable cargarTablaHash(const std::string& tablaHashFileName) {
     return tablaHash;
 }
 
-Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
-    int id = formatearDni(dni);
-
-    // Buscar la direcci�n de memoria en la tabla hash
-    std::pair<int, size_t> entry = tablaHash.buscar(id);
-    //std::cout << entry.first << std::endl;
-    if (entry.first == -1) {
-        throw std::runtime_error("\t\tCiudadano no encontrado...\n");
-    }
-
-    size_t memoryAddress = entry.second;
-
-    // Cargar el ciudadano desde la dirección de memoria
-    boost::interprocess::file_mapping file(ciudadanosFileName.c_str(), boost::interprocess::read_only);
-    boost::interprocess::mapped_region region(file, boost::interprocess::read_only, memoryAddress, sizeof(size_t));
-
-    size_t ciudadanoSize;
-    std::memcpy(&ciudadanoSize, region.get_address(), sizeof(size_t)); // Leer el tamaño del ciudadano
-
-    boost::interprocess::mapped_region regionCiudadano(file, boost::interprocess::read_only, memoryAddress + sizeof(size_t), ciudadanoSize);
-
-    std::stringstream ss;
-    ss.write(static_cast<const char*>(regionCiudadano.get_address()), ciudadanoSize);
-
-    Ciudadano ciudadano;
-    {
-        boost::archive::binary_iarchive ia(ss);
-        ia >> ciudadano;
-    }
-
-    return ciudadano;
-}
-
 CuckooHashTable cargarDatos(const std::string& ciudadanosFileName, const std::string& tablaHashFileName) {
     std::ifstream fileStream(tablaHashFileName, std::ios::binary);
 
@@ -120,18 +87,57 @@ void insertarCiudadanoEnBinario(Ciudadano& nuevoCiudadano, const std::string& ci
     std::string ciudadanoData = ss.str();
     size_t ciudadanoSize = ciudadanoData.size();
 
-    // Obtener la posición de memoria actual (al final del archivo)
-    size_t memoryAddress = ofsCiudadanos.tellp();
-
     // Escribir el tamaño y los datos del nuevo ciudadano en el archivo
     ofsCiudadanos.write(reinterpret_cast<const char*>(&ciudadanoSize), sizeof(size_t));
     ofsCiudadanos.write(ciudadanoData.c_str(), ciudadanoSize);
+
+    // Validar la posición después de escribir
+    size_t memoryAddressAfterWrite = ofsCiudadanos.tellp();
+
+    // Obtener la posición de memoria actual (al final del archivo)
+    size_t memoryAddress = memoryAddressAfterWrite - (ciudadanoSize + sizeof(size_t));
 
     // Insertar en la tabla hash
     tablaHash.insertar(nuevoCiudadano.getId(), memoryAddress);
 
     ofsCiudadanos.close();
 }
+
+Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
+    int id = formatearDni(dni);
+
+    // Buscar la dirección de memoria en la tabla hash
+    std::pair<int, size_t> entry = tablaHash.buscar(id);
+    if (entry.first == -1) {
+        throw std::runtime_error("\t\tCiudadano no encontrado...\n");
+    }
+
+    size_t memoryAddress = entry.second;
+
+    // Cargar el ciudadano desde la dirección de memoria
+    boost::interprocess::file_mapping file(ciudadanosFileName.c_str(), boost::interprocess::read_only);
+    size_t ciudadanoSize;
+
+    // Leer el tamaño del ciudadano
+    {
+        boost::interprocess::mapped_region region(file, boost::interprocess::read_only, memoryAddress, sizeof(size_t));
+        std::memcpy(&ciudadanoSize, region.get_address(), sizeof(size_t));
+    }
+
+    // Leer los datos del ciudadano
+    boost::interprocess::mapped_region regionCiudadano(file, boost::interprocess::read_only, memoryAddress + sizeof(size_t), ciudadanoSize);
+    std::stringstream ss;
+    ss.write(static_cast<const char*>(regionCiudadano.get_address()), ciudadanoSize);
+
+    Ciudadano ciudadano;
+    {
+        boost::archive::binary_iarchive ia(ss);
+        ia >> ciudadano;
+    }
+
+    return ciudadano;
+}
+
 
 void sobrescribirTablaHash(const CuckooHashTable& nuevaTablaHash, const std::string& tablaHashFileName) {
     std::ofstream ofsTablaHash(tablaHashFileName, std::ios::binary | std::ios::trunc); // Abrir en modo truncar para sobrescribir
@@ -193,7 +199,7 @@ void eliminarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileN
     }
 }
 
-void insertarCiudadanoAleatoriamente(CuckooHashTable& cuckooTable, std::string ciudadanosFileName) {
+void insertarCiudadanoAleatoriamente(CuckooHashTable& cuckooTable, std::string& ciudadanosFileName) {
     std::cout << "\t\t|| Insertar Nuevo Ciudadano Aleatoriamente ||\n";
     std::cout << "\t\t*********************************************\n";
 
@@ -220,7 +226,7 @@ void insertarCiudadanoAleatoriamente(CuckooHashTable& cuckooTable, std::string c
     system("cls");
 }
 
-void insertarNuevoCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileName) {
+void insertarNuevoCiudadano(CuckooHashTable& cuckooTable, std::string& ciudadanosFileName) {
     bool valido = false;
     std::string dni;
     int id;
