@@ -16,12 +16,7 @@
 #include "CuckooHash.h"
 #include "Funciones.cpp"
 #include "Utilidades.cpp"
-
-
-const std::string POSITIVO = "si";
-const int MAX_POBLACION = 99999999;
-const int POBLACION = 100000;
-const int NUM_TABLAS_CUCKOO = 3;
+#include "Constantes.h"
 
 CuckooHashTable generarCiudadanosYTablaHash(int poblacionSize, const std::string& ciudadanosFileName, const std::string& tablaHashFileName) {
     // Crear archivo para ciudadanos
