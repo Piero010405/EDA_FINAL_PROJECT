@@ -58,6 +58,8 @@ public:
 
     std::pair<int, size_t> buscar(int clave);
 
+    bool existe(int clave);
+
     void eliminar(int clave);
 
     void mostrar();

@@ -31,6 +31,10 @@ public:
 
     Ciudadano(int id);
 
+    Ciudadano(int id, std::string dni, std::string nombre, std::vector<std::string> apellidos, std::string nacionalidad,
+        std::string lugarNacimiento, std::string direccion, std::string telefono, std::string email,
+        std::string estadoCivil){}
+
     void imprimir();
 
     void save(std::ostringstream& oss);

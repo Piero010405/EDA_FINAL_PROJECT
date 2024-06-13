@@ -135,6 +135,19 @@ std::pair<int, size_t> CuckooHashTable::buscar(int clave)
     return { -1, 0 };
 }
 
+bool CuckooHashTable::existe(int clave)
+{
+    for (int i = 0; i < numTables; i++)
+    {
+        int pos = hashFunction(clave, i);
+        if (tables.at(i)[pos].first != -1 && tables.at(i)[pos].first == clave)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void CuckooHashTable::eliminar(int clave)
 {
     for (int i = 0; i < numTables; i++)

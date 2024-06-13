@@ -30,5 +30,11 @@
     <ClCompile Include="CuckooHash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Funciones.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilidades.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
