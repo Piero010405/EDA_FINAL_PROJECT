@@ -60,17 +60,6 @@ CuckooHashTable cargarTablaHash(const std::string& tablaHashFileName) {
     return tablaHash;
 }
 
-int formatearDni(std::string dni) {
-    int id;
-    try {
-        id = std::stoi(dni);
-    }
-    catch (const std::invalid_argument& e) {
-        throw std::runtime_error("DNI inválido. Debe ser un número entero.");
-    }
-    return id;
-}
-
 Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
     int id = formatearDni(dni);
 
@@ -116,30 +105,53 @@ CuckooHashTable cargarDatos(const std::string& ciudadanosFileName, const std::st
     }
 }
 
-std::string dniValido() {
-    std::string dni;
-    bool esValido = false;
-
-    while (!esValido) {
-        std::cout << "\t\tIngresar el DNI a buscar (8 dígitos): \n";
-        std::getline(std::cin, dni);
-
-        if (dni.length() == 8 && std::all_of(dni.begin(), dni.end(), ::isdigit)) {
-            esValido = true;
-        }
-        else {
-            std::cerr << "\t\tDNI inválido. Por favor ingrese un DNI con 8 dígitos.\n";
-        }
+void insertarCiudadanoEnBinario(Ciudadano& nuevoCiudadano, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
+    // Abrir archivo en modo append
+    std::ofstream ofsCiudadanos(ciudadanosFileName, std::ios::binary | std::ios::app);
+    if (!ofsCiudadanos.is_open()) {
+        throw std::runtime_error("No se pudo abrir el archivo de ciudadanos para escribir");
     }
 
-    return dni;
+    // Serializar el nuevo ciudadano
+    std::stringstream ss;
+    {
+        boost::archive::binary_oarchive oa(ss);
+        oa << nuevoCiudadano;
+    }
+    std::string ciudadanoData = ss.str();
+    size_t ciudadanoSize = ciudadanoData.size();
+
+    // Obtener la posición de memoria actual (al final del archivo)
+    size_t memoryAddress = ofsCiudadanos.tellp();
+
+    // Escribir el tamaño y los datos del nuevo ciudadano en el archivo
+    ofsCiudadanos.write(reinterpret_cast<const char*>(&ciudadanoSize), sizeof(size_t));
+    ofsCiudadanos.write(ciudadanoData.c_str(), ciudadanoSize);
+
+    // Insertar en la tabla hash
+    tablaHash.insertar(nuevoCiudadano.getId(), memoryAddress);
+
+    ofsCiudadanos.close();
 }
+
+void sobrescribirTablaHash(const CuckooHashTable& nuevaTablaHash, const std::string& tablaHashFileName) {
+    std::ofstream ofsTablaHash(tablaHashFileName, std::ios::binary | std::ios::trunc); // Abrir en modo truncar para sobrescribir
+    if (!ofsTablaHash.is_open()) {
+        throw std::runtime_error("No se pudo abrir el archivo de la tabla hash para sobrescribir");
+    }
+
+    boost::archive::binary_oarchive oaTablaHash(ofsTablaHash);
+    oaTablaHash << nuevaTablaHash;
+
+    ofsTablaHash.close();
+}
+
 
 void buscarCiudadano(CuckooHashTable cuckooTable, std::string ciudadanosFileName) {
     std::cout << "\t\t|| Buscar Ciudadano ||\n";
     std::cout << "\t\t**********************\n";
 
-    std::string dni = dniValido();
+    std::string dni = obtenerDniValido();
 
     try {
         Ciudadano ciudadano = buscarCiudadanoPorDNI(dni, ciudadanosFileName, cuckooTable);
@@ -154,7 +166,7 @@ void eliminarCiudadano(CuckooHashTable cuckooTable, std::string ciudadanosFileNa
     std::cout << "\t\t|| Eliminar Ciudadano ||\n";
     std::cout << "\t\t************************\n";
 
-    std::string dni = dniValido();
+    std::string dni = obtenerDniValido();
     std::string rpt;
 
     try {
@@ -206,24 +218,27 @@ void insertarCiudadanoAleatoriamente(CuckooHashTable cuckooTable, std::string ci
     std::cout << "\t\t|| Insertar Nuevo Ciudadano Aleatoriamente ||\n";
     std::cout << "\t\t*********************************************\n";
 
-    Ciudadano obj;
-    do {
-        std::string dni = dniValido();
-        int id = formatearDni(dni);
-        try {
-            Ciudadano ciudadano = buscarCiudadanoPorDNI(dni, ciudadanosFileName, cuckooTable);
-            std::cout << "\t\tCiudadano ya existe... ingresar otro DNI\n";
+    bool valido = false;
+    std::string dni;
+    int id;
+    while (!valido) {
+        dni = obtenerDniValido();
+        id = formatearDni(dni);
+        if (cuckooTable.existe(id)) {
+            std::cout << "\t\tYa existe un ciudadano con el DNI ingresado... Ingresar un nuevo DNI\n";
         }
-        catch (std::runtime_error& e) {
-            obj = Ciudadano(id);
-            std::cout << "\t\tCiudadano generado aleatoriamente ...\n";
-            obj.imprimir();
-            std::cout << "\t\t*************************************\n";
-            // insertar en el cucko y guardar el ciuadadano en el archivo ...
-            system("pause");
-            system("cls");
-        }
-    } while (obj.getId() == -1);
+        valido = !cuckooTable.existe(id);
+    }
+
+    Ciudadano obj = Ciudadano(id);
+    std::cout << "\t\t*************************************\n";
+    std::cout << "\t\tCiudadano generado aleatoriamente ...\n";
+    obj.imprimir();
+    std::cout << "\t\t*************************************\n";
+    insertarCiudadanoEnBinario(obj, ciudadanosFileName, cuckooTable);
+    std::cout << "\t\tCiudadano insertado exitosamente ...\n";
+    system("pause");
+    system("cls");
 }
 
 void insertarCiudadano(CuckooHashTable cuckooTable, std::string ciudadanosFileName) {
@@ -233,7 +248,7 @@ void insertarCiudadano(CuckooHashTable cuckooTable, std::string ciudadanosFileNa
     std::cout << "\t\t|| Insertar Nuevo Ciudadano ||\n";
     std::cout << "\t\t******************************\n";
     while(!valido) {
-        dni = dniValido();
+        dni = obtenerDniValido();
         id = formatearDni(dni);
         if (cuckooTable.existe(id)) {
             std::cout << "\t\tYa existe un ciudadano con el DNI ingresado... Ingresar un nuevo DNI\n";
@@ -277,7 +292,7 @@ void insertarCiudadano(CuckooHashTable cuckooTable, std::string ciudadanosFileNa
         system("cls");
     } while (opt > 3);
     Ciudadano obj = Ciudadano(id, dni, nombre, apellidos, nacionalidad, lugarNacimiento, direccion, telefono, email, estadoCivil);
-    // FALTA GUARDAR EN EL CUCKOO Y EN EL BIN
+    insertarCiudadanoEnBinario(obj, ciudadanosFileName, cuckooTable);
     std::cout << "\t\tUsuario creado e insertado exitosamente...\n";
     system("pause");
     system("cls");
@@ -313,7 +328,7 @@ void menuPrincipal() {
         case 1: system("cls"); buscarCiudadano(cuckooTable, ciudadanosFileName); break;
         case 2: system("cls"); eliminarCiudadano(cuckooTable, ciudadanosFileName); break;
         case 3: system("cls"); insertarCiudadano(cuckooTable, ciudadanosFileName); break;
-        case 4: salir(); exit(0); break;
+        case 4: salir(); sobrescribirTablaHash(cuckooTable, cuckooFileName); exit(0); break;
         default: std::cout << "\t\tIngrese una opcion válida entre [1-4]\n"; system("pause"); system("cls");
         }
     } while (opt != 4);

@@ -22,6 +22,36 @@ extern std::string toLowerCase(const std::string& str)
     return resultado;
 }
 
+extern int formatearDni(std::string dni) {
+    int id;
+    try {
+        id = std::stoi(dni);
+    }
+    catch (const std::invalid_argument& e) {
+        throw std::runtime_error("DNI inválido. Debe ser un número entero.");
+    }
+    return id;
+}
+
+extern std::string obtenerDniValido() {
+    std::string dni;
+    bool esValido = false;
+
+    while (!esValido) {
+        std::cout << "\t\tIngresar el DNI a buscar (8 dígitos): \n";
+        std::getline(std::cin, dni);
+
+        if (dni.length() == 8 && std::all_of(dni.begin(), dni.end(), ::isdigit)) {
+            esValido = true;
+        }
+        else {
+            std::cerr << "\t\tDNI inválido. Por favor ingrese un DNI con 8 dígitos.\n";
+        }
+    }
+
+    return dni;
+}
+
 extern int getRandom(std::vector<std::string> arr)
 {
     int random = rand() % arr.size();
