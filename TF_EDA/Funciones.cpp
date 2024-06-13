@@ -32,19 +32,20 @@ extern std::string obtenerDniValido() {
     bool esValido = false;
 
     while (!esValido) {
-        std::cout << "\t\tIngresar el DNI a buscar (8 dígitos): \n";
+        std::cout << "\t\tIngresar el DNI a buscar (8 dígitos): ";
+        std::cin.ignore();
         std::getline(std::cin, dni);
 
         if (dni.length() == 8 && std::all_of(dni.begin(), dni.end(), ::isdigit)) {
             esValido = true;
         }
         else {
-            std::cerr << "\t\tDNI inválido. Por favor ingrese un DNI con 8 dígitos.\n";
+            std::cerr << "\n\t\tDNI inválido. Por favor ingrese un DNI con 8 dígitos.\n";
         }
     }
-
     return dni;
 }
+
 
 extern int getRandom(std::vector<std::string> arr)
 {
