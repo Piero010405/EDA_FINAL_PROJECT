@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -12,7 +13,6 @@
 
 namespace boost {
     namespace serialization {
-
         template<class Archive>
         void serialize(Archive& ar, std::pair<int, size_t>& p, const unsigned int version) {
             ar& p.first;
@@ -21,8 +21,7 @@ namespace boost {
     }
 }
 
-class CuckooHashTable
-{
+class CuckooHashTable {
 private:
     std::vector<std::vector<std::pair<int, size_t>>> tables;
     int numTables;
@@ -33,36 +32,24 @@ private:
 
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive &ar, const unsigned int version) {
+    void serialize(Archive& ar, const unsigned int version) {
         ar& tables& numTables& size& numElements& hashSeeds& umbralredimensionamiento;
     }
 
 public:
     CuckooHashTable() = default;
-
     CuckooHashTable(int numTables, int size);
 
     int hashFunction(int clave, int tableIndex);
-
     double factordecarga() const;
-
     void validarredimensionar();
-
     void redimensionar();
-
     void insertarEnNuevaTabla(std::vector<std::vector<std::pair<int, size_t>>>& newTables, std::pair<int, size_t> tupla);
-
     void insertar(int clave, size_t memoryAdress);
-
     void insertarRecursivo(std::pair<int, size_t> tupla, int depth);
-
     std::pair<int, size_t> buscar(int clave);
-
     bool existe(int clave);
-
     void eliminar(int clave);
-
     void mostrar();
-
     ~CuckooHashTable();
 };

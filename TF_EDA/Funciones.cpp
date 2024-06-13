@@ -10,7 +10,8 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-#include "Utilidades.cpp"
+#include "Funciones.h"
+#include "Utilidades.h"
 
 extern std::string toLowerCase(const std::string& str)
 {
@@ -23,14 +24,7 @@ extern std::string toLowerCase(const std::string& str)
 }
 
 extern int formatearDni(std::string dni) {
-    int id;
-    try {
-        id = std::stoi(dni);
-    }
-    catch (const std::invalid_argument& e) {
-        throw std::runtime_error("DNI inválido. Debe ser un número entero.");
-    }
-    return id;
+    return std::stoi(dni);
 }
 
 extern std::string obtenerDniValido() {
@@ -58,7 +52,7 @@ extern int getRandom(std::vector<std::string> arr)
     return random;
 }
 
-extern int getRandomNacionality(std::vector<std::string> arr, const double probabilidad = 0.9609) // Tasa de innimgrantes (2023) = 3.91%
+extern int getRandomNacionality(std::vector<std::string> arr, const double probabilidad) // Tasa de innimgrantes (2023) = 3.91%
 {
     std::random_device rd;
     std::mt19937 gen(rd());

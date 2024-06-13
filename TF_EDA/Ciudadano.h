@@ -6,8 +6,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/string.hpp>
 
-class Ciudadano
-{
+class Ciudadano {
     int id;
     std::string dni;
     std::string nombre;
@@ -23,17 +22,16 @@ class Ciudadano
 
     template<class Archive>
     void serialize(Archive& ar, const unsigned int version) {
-        ar& dni& nombre& apellidos& nacionalidad& lugarNacimiento& direccion& telefono& email& estadoCivil;
+        ar& id& dni& nombre& apellidos& nacionalidad& lugarNacimiento& direccion& telefono& email& estadoCivil;
     }
 public:
-
     Ciudadano() = default;
 
     Ciudadano(int id);
 
     Ciudadano(int id, std::string dni, std::string nombre, std::vector<std::string> apellidos, std::string nacionalidad,
         std::string lugarNacimiento, std::string direccion, std::string telefono, std::string email,
-        std::string estadoCivil){}
+        std::string estadoCivil);
 
     void imprimir();
 

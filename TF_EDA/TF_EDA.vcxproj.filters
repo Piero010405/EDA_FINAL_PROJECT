@@ -41,5 +41,11 @@
     <ClInclude Include="Constantes.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Utilidades.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Funciones.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

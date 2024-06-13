@@ -10,12 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-
-struct Departamento
-{
-    std::string nombre;
-    std::vector<std::string> ciudades;
-};
+#include "Utilidades.h"
 
 int getRandomDepartament(std::vector<Departamento> arr)
 {

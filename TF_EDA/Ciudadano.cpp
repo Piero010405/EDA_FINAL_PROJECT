@@ -1,26 +1,8 @@
-﻿#pragma once
-#include <iostream>
-#include <cstdlib>
-#include <vector>
-#include <cctype>
-#include <string>
-#include <ctime>
-#include <random>
-#include <utility>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/string.hpp>
-#include "Ciudadano.h"
-#include "Funciones.cpp"
-#include "Utilidades.cpp"
+﻿#include "Ciudadano.h"
+#include "Funciones.h" 
+#include "Utilidades.h" 
 
-Ciudadano::Ciudadano(int id)
-{
-    this->id = id;
+Ciudadano::Ciudadano(int id) : id(id) {
     std::string nacionalidad = nacionalidades_lst[getRandomNacionality(nacionalidades_lst)];
     std::string nombre = nombres_lst[getRandom(nombres_lst)];
     std::pair<std::vector<std::string>, std::string> info = generarInformacionBasica(nacionalidad);
@@ -39,12 +21,14 @@ Ciudadano::Ciudadano(int id)
     this->direccion = direcciones_lst[getRandom(direcciones_lst)];
 }
 
-Ciudadano::Ciudadano(int id, std::string dni, std::string nombre, std::vector<std::string> apellidos, std::string nacionalidad, 
-    std::string lugarNacimiento, std::string direccion, std::string telefono, std::string email, 
-    std::string estadoCivil): id(id), dni(dni), nombre(nombre), apellidos(apellidos), nacionalidad(nacionalidad), lugarNacimiento(lugarNacimiento), direccion(direccion), telefono(telefono), email(email), estadoCivil(estadoCivil) {}
+Ciudadano::Ciudadano(int id, std::string dni, std::string nombre, std::vector<std::string> apellidos, std::string nacionalidad,
+    std::string lugarNacimiento, std::string direccion, std::string telefono, std::string email,
+    std::string estadoCivil)
+    : id(id), dni(dni), nombre(nombre), apellidos(apellidos), nacionalidad(nacionalidad),
+    lugarNacimiento(lugarNacimiento), direccion(direccion), telefono(telefono),
+    email(email), estadoCivil(estadoCivil) {}
 
-void Ciudadano::imprimir()
-{
+void Ciudadano::imprimir() {
     std::cout << "\t\tDNI: " << this->dni << std::endl;
     std::cout << "\t\tNombres: " << this->nombre << std::endl;
     std::cout << "\t\tApellidos: " << this->apellidos[0] << " " << this->apellidos[1] << std::endl;
@@ -57,18 +41,16 @@ void Ciudadano::imprimir()
     std::cout << std::endl;
 }
 
-void Ciudadano::save(std::ostringstream& oss)
-{
+void Ciudadano::save(std::ostringstream& oss) {
     boost::archive::binary_oarchive oa(oss);
-    oa&* (this);
+    oa&* this;
 }
 
-void Ciudadano::load(std::ostringstream& oss)
-{
+void Ciudadano::load(std::ostringstream& oss) {
     std::string str_data = oss.str();
     std::istringstream iss(str_data);
     boost::archive::binary_iarchive ia(iss);
-    ia&* (this);
+    ia&* this;
 }
 
 size_t Ciudadano::getCiudadanoSize() {
