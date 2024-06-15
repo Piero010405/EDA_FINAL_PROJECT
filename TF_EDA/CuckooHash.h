@@ -31,6 +31,12 @@ private:
     double umbralredimensionamiento = 0.7;
     int numberHashesPerTable = 4;
 
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version) {
+        ar& tables& numTables& size& numElements& hashSeeds& umbralredimensionamiento& numberHashesPerTable;
+    }
+
 public:
     CuckooHashTable(int numTables, int size);
     int hashFunction(int clave, int tableIndex, int hashSeedIndex);
