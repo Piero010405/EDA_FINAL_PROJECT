@@ -38,6 +38,7 @@ private:
     }
 
 public:
+    CuckooHashTable() = default;
     CuckooHashTable(int numTables, int size);
     int hashFunction(int clave, int tableIndex, int hashSeedIndex);
     double factordecarga() const;
