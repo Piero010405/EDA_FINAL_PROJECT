@@ -1,26 +1,5 @@
 #include "CuckooHash.h"
 
-CuckooHashTable::CuckooHashTable(int numTables, int size) : numTables(numTables), size(size), numElements(0)
-{
-    tables.resize(numTables);
-    hashSeeds.resize(numTables);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1000000, 9999999);
-
-    for (int i = 0; i < numTables; i++)
-    {
-        tables[i].resize(size, { -1, 0 });
-        hashSeeds[i].resize(numberHashesPerTable);
-        // Insertando n Hash Seed por cada tabla
-        for (int j = 0; j < numberHashesPerTable; ++j)
-        {
-            hashSeeds[i][j] = dis(gen);
-        }
-    }
-}
-
 int hashFunction0(int clave, int size)
 {
     return clave % size;
@@ -44,6 +23,27 @@ int hashFunction3(int clave, int hashSeed, int size)
 int hashFunction4(int clave, int hashSeed, int size)
 {
     return ((clave ^ (clave >> 8) ^ (clave >> 16)) ^ hashSeed) % size;
+}
+
+CuckooHashTable::CuckooHashTable(int numTables, int size) : numTables(numTables), size(size), numElements(0)
+{
+    tables.resize(numTables);
+    hashSeeds.resize(numTables);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1000000, 9999999);
+
+    for (int i = 0; i < numTables; i++)
+    {
+        tables[i].resize(size, { -1, 0 });
+        hashSeeds[i].resize(numberHashesPerTable);
+        // Insertando n Hash Seed por cada tabla
+        for (int j = 0; j < numberHashesPerTable; ++j)
+        {
+            hashSeeds[i][j] = dis(gen);
+        }
+    }
 }
 
 int CuckooHashTable::hashFunction(int clave, int tableIndex, int hashSeedIndex)
