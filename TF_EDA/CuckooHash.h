@@ -27,26 +27,21 @@ private:
     int numTables;
     int size;
     int numElements;
-    std::vector<int> hashSeeds;
-    double umbralredimensionamiento = 0.6;
-
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive& ar, const unsigned int version) {
-        ar& tables& numTables& size& numElements& hashSeeds& umbralredimensionamiento;
-    }
+    std::vector<std::vector<int>> hashSeeds;
+    double umbralredimensionamiento = 0.7;
+    int numberHashesPerTable = 4;
 
 public:
-    CuckooHashTable() = default;
     CuckooHashTable(int numTables, int size);
-
-    int hashFunction(int clave, int tableIndex);
+    int hashFunction(int clave, int tableIndex, int hashSeedIndex);
     double factordecarga() const;
     void validarredimensionar();
     void redimensionar();
-    void insertarEnNuevaTabla(std::vector<std::vector<std::pair<int, size_t>>>& newTables, std::pair<int, size_t> tupla);
+    bool insertarEnNuevaTabla(std::vector<std::vector<std::pair<int, size_t>>>& newTables, std::pair<int, size_t> tupla);
     void insertar(int clave, size_t memoryAdress);
     void insertarRecursivo(std::pair<int, size_t> tupla, int depth);
+    void insertarEnOtraTabla(int clave, size_t memoryAdress, std::vector<std::vector<std::pair<int, size_t>>>& tables);
+    void insertarRecursivoEnOtraTabla(std::pair<int, size_t> tupla, int depth, std::vector<std::vector<std::pair<int, size_t>>>& tables);
     std::pair<int, size_t> buscar(int clave);
     bool existe(int clave);
     void eliminar(int clave);
