@@ -21,7 +21,6 @@
 CuckooHashTable generarCiudadanosYTablaHash(int poblacionSize, const std::string& ciudadanosFileName, const std::string& tablaHashFileName) {
     // Crear archivo para ciudadanos
     std::ofstream ofsCiudadanos(ciudadanosFileName, std::ios::binary);
-    boost::archive::binary_oarchive oaCiudadanos(ofsCiudadanos);
 
     // Crear tabla hash de Cuckoo
     CuckooHashTable tablaHash(NUM_TABLAS_CUCKOO, 10);
