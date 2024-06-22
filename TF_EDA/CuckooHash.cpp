@@ -93,7 +93,7 @@ void CuckooHashTable::redimensionar()
         {
             if (tables[i][j].first != -1)
             {
-                if (!insertarEnNuevaTabla(newTables, tables[i][j]))
+                if (!insertarEnNuevaTabla(newTables, tables[i][j])) // intenta redimensionar sin redimensionar
                 {
                     insertarEnOtraTabla(tables[i][j].first, tables[i][j].second, newTables);
                 }
@@ -111,6 +111,7 @@ bool CuckooHashTable::insertarEnNuevaTabla(std::vector<std::vector<std::pair<int
     {
         for (int j = 0; j < numberHashesPerTable; ++j)
         {
+            // SIZE
             int pos = hashFunction(tupla.first, i, j);
             if (newTables[i][pos].first == -1)
             {
@@ -158,6 +159,7 @@ void CuckooHashTable::insertarRecursivo(std::pair<int, size_t> tupla, int depth)
         int i = dis(gen);
         for (int j = 0; j < numberHashesPerTable; ++j)
         {
+            // SIZE
             int pos = hashFunction(tupla.first, i, j);
             if (tables[i][pos].first == -1)
             {
