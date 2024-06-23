@@ -254,3 +254,128 @@ void BTreeNode::delete_internal_node(BTreeNode* node, int key, int index, BTreeN
         delete_internal_node(node->children[i], key, t - 1, root);
     }
 }
+
+std::pair<int, size_t> BTreeNode::search(int dni) {
+    // Encuentra la primera clave mayor o igual a dni
+    int i = 0;
+    while (i < n && keys[i].first < dni) {
+        i++;
+    }
+
+    // Si la clave se encuentra en este nodo, devuelve su page ID
+    if (i < n && keys[i].first == dni) {
+        return keys[i];
+    }
+
+    // Si la clave no se encuentra aquí y este es un nodo hoja
+    if (leaf) {
+        return {-1, 0}; // Indicador de que la clave no se encontró
+    }
+
+    // Va al subárbol adecuado
+    return children[i]->search(dni);
+}
+
+bool BTreeNode::isExisting(int dni) {
+    // Encuentra la primera clave mayor o igual a dni
+    int i = 0;
+    while (i < n && keys[i].first < dni) {
+        i++;
+    }
+
+    // Si la clave se encuentra en este nodo, devuelve su page ID
+    if (i < n && keys[i].first == dni) {
+        return true;
+    }
+
+    // Si la clave no se encuentra aquí y este es un nodo hoja
+    if (leaf) {
+        return false; // Indicador de que la clave no se encontró
+    }
+
+    // Va al subárbol adecuado
+    return children[i]->isExisting(dni);
+}
+
+void BTreeNode::Delete(int key, BTreeNode* root) {
+    int i = 0;
+    while (i < n && key > keys[i].first)
+    {
+        i++;
+    }
+
+    if (leaf)
+    {
+        if (i < n && key ==keys[i].first)
+        {
+            for (int j = i; j < n - 1; j++)
+            {
+                keys[j] = keys[j + 1];
+            }
+            n -= 1;
+            std::cout << "\t\tSe eliminó el registro " << key << " con éxito." << std::endl;
+            return;
+        }
+        else
+        {
+            std::cout << "\t\tNo se encontró el nodo" << std::endl;
+            return;
+        }
+    }
+
+    // Si la clave está en este nodo
+    if (i < n && keys[i].first == key)
+    {
+        delete_internal_node(this, key, i, root);
+        return;
+    }
+
+    // Si la clave no está en este nodo y este nodo no es una hoja, descendemos al hijo apropiado
+    if (children[i]->n >= t)
+    {
+        Delete(key, root);
+    }
+    else
+    {
+        // Manejar casos de fusionar o dividir nodos hermanos
+        if (i != 0 && i + 1 < children.size())
+        {
+            if (children[i - 1]->n >= t)
+            {
+                delete_sibling(this, i, i - 1);
+            }
+            else if (children[i + 1]->n >= t)
+            {
+                delete_sibling(this, i, i + 1);
+            }
+            else
+            {
+                delete_merge(this, i, i + 1, root);
+            }
+        }
+        else if (i == 0)
+        {
+            if (children[i + 1]->n >= t)
+            {
+                delete_sibling(this, i, i + 1);
+            }
+            else
+            {
+                delete_merge(this, i, i + 1, root);
+            }
+        }
+        else if (i + 1 == children.size())
+        {
+            if (children[i - 1]->n >= t)
+            {
+                delete_sibling(this, i, i - 1);
+            }
+            else
+            {
+                delete_merge(this, i - 1, i, root);
+            }
+        }
+        // Después de fusionar o dividir nodos hermanos, descendemos al hijo apropiado para continuar la eliminación
+        Delete(key, root);
+    }
+}

@@ -57,5 +57,11 @@ public:
 
     void delete_merge(BTreeNode* node, int i, int j, BTreeNode*& root);
 
+    std::pair<int, size_t> search(int id);
+
+    bool isExisting(int id);
+
+    void Delete(int id, BTreeNode* root);
+
     friend class BTree;
 };

@@ -13,17 +13,18 @@
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 #include "Ciudadano.h"
-#include "CuckooHash.h"
+#include "BTree.h"
 #include "Funciones.h"
 #include "Utilidades.h"
 #include "Constantes.h"
+#include "Serialization.h"
 
-CuckooHashTable generarCiudadanosYTablaHash(int poblacionSize, const std::string& ciudadanosFileName, const std::string& tablaHashFileName) {
+BTree generarCiudadanosYBTree(int poblacionSize, const std::string& ciudadanosFileName, const std::string& btreeFileName) {
     // Crear archivo para ciudadanos
     std::ofstream ofsCiudadanos(ciudadanosFileName, std::ios::binary);
 
-    // Crear tabla hash de Cuckoo
-    CuckooHashTable tablaHash(NUM_TABLAS_CUCKOO, 10);
+    // Crear el BTree
+    BTree btree = BTree(GRADO_MINIMO);
 
     for (int i = 1; i <= poblacionSize; ++i) {
         Ciudadano ciudadano(i);
@@ -40,37 +41,32 @@ CuckooHashTable generarCiudadanosYTablaHash(int poblacionSize, const std::string
         ofsCiudadanos.write(reinterpret_cast<const char*>(&ciudadanoSize), sizeof(size_t)); // Guardar el tamaño
         ofsCiudadanos.write(ciudadanoData.c_str(), ciudadanoData.size());
 
-        // Insertar en la tabla hash
-        tablaHash.insertar(ciudadano.getId(), memoryAddress);
+        // Insertar en la btree
+        btree.insert(ciudadano.getId(), memoryAddress);
     }
 
     // Serializar la tabla hash
-    std::ofstream ofsTablaHash(tablaHashFileName, std::ios::binary);
-    boost::archive::binary_oarchive oaTablaHash(ofsTablaHash);
-    oaTablaHash << tablaHash;
-    return tablaHash;
+    SerializeBTree(btree, btreeFileName);
+    return btree;
 }
 
-CuckooHashTable cargarTablaHash(const std::string& tablaHashFileName) {
-    std::ifstream ifsTablaHash(tablaHashFileName, std::ios::binary);
-    boost::archive::binary_iarchive iaTablaHash(ifsTablaHash);
-    CuckooHashTable tablaHash;
-    iaTablaHash >> tablaHash;
-    return tablaHash;
+BTree cargarBTree(const std::string& btreeFileName) {
+    BTree btree = DeserializeBTree(btreeFileName, GRADO_MINIMO);
+    return btree;
 }
 
-CuckooHashTable cargarDatos(const std::string& ciudadanosFileName, const std::string& tablaHashFileName) {
-    std::ifstream fileStream(tablaHashFileName, std::ios::binary);
+BTree cargarDatos(const std::string& ciudadanosFileName, const std::string& btreeFileName) {
+    std::ifstream fileStream(btreeFileName, std::ios::binary);
 
     if (!fileStream.is_open()) {
-        return generarCiudadanosYTablaHash(POBLACION, ciudadanosFileName, tablaHashFileName);
+        return generarCiudadanosYBTree(POBLACION, ciudadanosFileName, btreeFileName);
     }
     else {
-        return cargarTablaHash(tablaHashFileName);
+        return cargarBTree(btreeFileName);
     }
 }
 
-void insertarCiudadanoEnBinario(Ciudadano& nuevoCiudadano, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
+void insertarCiudadanoEnBinario(Ciudadano& nuevoCiudadano, const std::string& ciudadanosFileName, BTree& btree) {
     // Abrir archivo en modo append
     std::ofstream ofsCiudadanos(ciudadanosFileName, std::ios::binary | std::ios::app);
     if (!ofsCiudadanos.is_open()) {
@@ -96,17 +92,17 @@ void insertarCiudadanoEnBinario(Ciudadano& nuevoCiudadano, const std::string& ci
     // Obtener la posición de memoria actual (al final del archivo)
     size_t memoryAddress = memoryAddressAfterWrite - (ciudadanoSize + sizeof(size_t));
 
-    // Insertar en la tabla hash
-    tablaHash.insertar(nuevoCiudadano.getId(), memoryAddress);
+    // Insertar en la btree
+    btree.insert(nuevoCiudadano.getId(), memoryAddress);
 
     ofsCiudadanos.close();
 }
 
-Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciudadanosFileName, CuckooHashTable& tablaHash) {
+Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciudadanosFileName, BTree& btree) {
     int id = formatearDni(dni);
 
     // Buscar la dirección de memoria en la tabla hash
-    std::pair<int, size_t> entry = tablaHash.buscar(id);
+    std::pair<int, size_t> entry = btree.search(id);
     if (entry.first == -1) {
         throw std::runtime_error("\t\tCiudadano no encontrado...\n");
     }
@@ -138,20 +134,12 @@ Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciuda
 }
 
 
-void sobrescribirTablaHash(const CuckooHashTable& nuevaTablaHash, const std::string& tablaHashFileName) {
-    std::ofstream ofsTablaHash(tablaHashFileName, std::ios::binary | std::ios::trunc); // Abrir en modo truncar para sobrescribir
-    if (!ofsTablaHash.is_open()) {
-        throw std::runtime_error("No se pudo abrir el archivo de la tabla hash para sobrescribir");
-    }
-
-    boost::archive::binary_oarchive oaTablaHash(ofsTablaHash);
-    oaTablaHash << nuevaTablaHash;
-
-    ofsTablaHash.close();
+void sobrescribirBTree(const BTree& nuevoBtree, const std::string& btreeFileName) {
+    SerializeBTree(nuevoBtree, btreeFileName);
 }
 
 
-void buscarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileName) {
+void buscarCiudadano(BTree& btree, std::string ciudadanosFileName) {
     std::cout << "\t\t|| Buscar Ciudadano ||\n";
     std::cout << "\t\t**********************\n";
 
@@ -160,7 +148,7 @@ void buscarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileNam
     try {
         std::cout << "\t\tBuscando Ciudadano ........\n";
         std::cout << "\t\t**********************\n";
-        Ciudadano ciudadano = buscarCiudadanoPorDNI(dni, ciudadanosFileName, cuckooTable);
+        Ciudadano ciudadano = buscarCiudadanoPorDNI(dni, ciudadanosFileName, btree);
         ciudadano.imprimir();
     }
     catch (std::runtime_error& e) {
@@ -170,7 +158,7 @@ void buscarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileNam
     system("cls");
 }
 
-void eliminarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileName) {
+void eliminarCiudadano(BTree& btree, std::string ciudadanosFileName) {
     std::cout << "\t\t|| Eliminar Ciudadano ||\n";
     std::cout << "\t\t************************\n";
 
@@ -178,13 +166,13 @@ void eliminarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileN
     std::string rpt;
 
     try {
-        Ciudadano ciudadano = buscarCiudadanoPorDNI(dni, ciudadanosFileName, cuckooTable);
+        Ciudadano ciudadano = buscarCiudadanoPorDNI(dni, ciudadanosFileName, btree);
         ciudadano.imprimir();
         std::cout << "\t\t*************************************\n";
         std::cout << "\t\tEstas seguro de eliminar al ciudadano? [si/no]: ";
         std::getline(std::cin, rpt);
         if (toLowerCase(rpt) == POSITIVO) {
-            cuckooTable.eliminar(formatearDni(dni));
+            btree.Delete(formatearDni(dni));
             std::cout << "\t\tCiudadano con DNI [" << dni << "] ha sido eliminado satisfactoriamente ...\n";
         }
         else {
@@ -198,7 +186,7 @@ void eliminarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileN
     }
 }
 
-void insertarCiudadanoAleatoriamente(CuckooHashTable& cuckooTable, std::string& ciudadanosFileName) {
+void insertarCiudadanoAleatoriamente(BTree& btree, std::string& ciudadanosFileName) {
     std::cout << "\t\t|| Insertar Nuevo Ciudadano Aleatoriamente ||\n";
     std::cout << "\t\t*********************************************\n";
 
@@ -208,10 +196,11 @@ void insertarCiudadanoAleatoriamente(CuckooHashTable& cuckooTable, std::string& 
     while (!valido) {
         dni = obtenerDniValido();
         id = formatearDni(dni);
-        if (cuckooTable.existe(id)) {
+        bool existe = btree.isExisting(id);
+        if (existe) {
             std::cout << "\t\tYa existe un ciudadano con el DNI ingresado... Ingresar un nuevo DNI\n";
         }
-        valido = !cuckooTable.existe(id);
+        valido = !existe;
     }
 
     Ciudadano obj = Ciudadano(id);
@@ -219,13 +208,13 @@ void insertarCiudadanoAleatoriamente(CuckooHashTable& cuckooTable, std::string& 
     std::cout << "\t\tCiudadano generado aleatoriamente ...\n";
     obj.imprimir();
     std::cout << "\t\t*************************************\n";
-    insertarCiudadanoEnBinario(obj, ciudadanosFileName, cuckooTable);
+    insertarCiudadanoEnBinario(obj, ciudadanosFileName, btree);
     std::cout << "\t\tCiudadano insertado exitosamente ...\n";
     system("pause");
     system("cls");
 }
 
-void insertarNuevoCiudadano(CuckooHashTable& cuckooTable, std::string& ciudadanosFileName) {
+void insertarNuevoCiudadano(BTree& btree, std::string& ciudadanosFileName) {
     bool valido = false;
     std::string dni;
     int id;
@@ -234,10 +223,11 @@ void insertarNuevoCiudadano(CuckooHashTable& cuckooTable, std::string& ciudadano
     while (!valido) {
         dni = obtenerDniValido();
         id = formatearDni(dni);
-        if (cuckooTable.existe(id)) {
+        bool existe = btree.isExisting(id);
+        if (existe) {
             std::cout << "\t\tYa existe un ciudadano con el DNI ingresado... Ingresar un nuevo DNI\n";
         }
-        valido = !cuckooTable.existe(id);
+        valido = !existe;
     }
 
     std::string nombre;
@@ -276,7 +266,7 @@ void insertarNuevoCiudadano(CuckooHashTable& cuckooTable, std::string& ciudadano
         system("cls");
     } while (opt > 3);
     Ciudadano obj = Ciudadano(id, dni, nombre, apellidos, nacionalidad, lugarNacimiento, direccion, telefono, email, estadoCivil);
-    insertarCiudadanoEnBinario(obj, ciudadanosFileName, cuckooTable);
+    insertarCiudadanoEnBinario(obj, ciudadanosFileName, btree);
     std::cout << "\t\tUsuario creado e insertado exitosamente...\n";
     system("pause");
     system("cls");
@@ -288,7 +278,7 @@ void salir() {
     system("cls");
 }
 
-void insertarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileName) {
+void insertarCiudadano(BTree& btree, std::string ciudadanosFileName) {
     int opt;
     do {
         std::cout << "\t\t|| Insertar Nuevo Ciudadano ||\n";
@@ -300,8 +290,8 @@ void insertarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileN
         std::cin >> opt;
         switch (opt)
         {
-        case 1: system("cls"); insertarCiudadanoAleatoriamente(cuckooTable, ciudadanosFileName); break;
-        case 2: system("cls"); insertarNuevoCiudadano(cuckooTable, ciudadanosFileName); break;
+        case 1: system("cls"); insertarCiudadanoAleatoriamente(btree, ciudadanosFileName); break;
+        case 2: system("cls"); insertarNuevoCiudadano(btree, ciudadanosFileName); break;
         case 3: salir(); break;
         default: std::cout << "\n\t\tIngrese una opcion válida entre [1-4]\n"; system("pause"); system("cls");
         }
@@ -311,10 +301,9 @@ void insertarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileN
 
 void menuPrincipal() {
     const std::string ciudadanosFileName = CIUDADANOS_FILE_NAME;
-    const std::string cuckooFileName = CUCKOO_HASH_FILE_NAME;
+    const std::string btreeFileName = BTREE_FILE_NAME;
 
-    // falta poner con punteros
-    CuckooHashTable cuckooTable = cargarDatos(ciudadanosFileName, cuckooFileName);
+    BTree btree = cargarDatos(ciudadanosFileName, btreeFileName);
 
     int opt;
     do
@@ -329,10 +318,10 @@ void menuPrincipal() {
         std::cin >> opt;
         switch (opt)
         {
-        case 1: system("cls"); buscarCiudadano(cuckooTable, ciudadanosFileName); break;
-        case 2: system("cls"); eliminarCiudadano(cuckooTable, ciudadanosFileName); break;
-        case 3: system("cls"); insertarCiudadano(cuckooTable, ciudadanosFileName); break;
-        case 4: salir(); sobrescribirTablaHash(cuckooTable, cuckooFileName); exit(0); break;
+        case 1: system("cls"); buscarCiudadano(btree, ciudadanosFileName); break;
+        case 2: system("cls"); eliminarCiudadano(btree, ciudadanosFileName); break;
+        case 3: system("cls"); insertarCiudadano(btree, ciudadanosFileName); break;
+        case 4: salir(); sobrescribirBTree(btree, btreeFileName); exit(0); break;
         default: std::cout << "\n\t\tIngrese una opcion válida entre [1-4]\n"; system("pause"); system("cls");
         }
     } while (opt != 4);

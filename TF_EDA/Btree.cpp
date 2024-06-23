@@ -6,7 +6,7 @@ BTree::BTree(int _t) {
     t = _t;
 }
 
-BTree::BTree(BTreeNode root, int _t) {
+BTree::BTree(BTreeNode* root, int _t) {
     root = root;
     t = _t;
 }
@@ -58,118 +58,43 @@ void BTree::insert(int k, size_t t)
     }
 }
 
-std::pair<int, size_t> BTree::search(int key, BTreeNode* node)
+std::pair<int, size_t> BTree::search(int key)
 {
-    if (node == nullptr)
-    {
-        node = root;
-    }
-    int i = 0;
-    while (i < node->n && key > node->keys[i].first)
-    {
-        i += 1;
-    }
-    if (i < node->n && key == node->keys[i].first)
-    {
-        //std::cout << "Se encontró el nodo" << std::endl;
-        return node->keys[i];
-    }
-    else if (node->leaf)
-    {
-        //std::cout << "No se encontró el nodo" << std::endl;
+    if (root == nullptr) {
         return {-1, 0};
     }
-    else
-    {
-        return search(key, node->children[i]);
-    }
+    // Llama al método search de la raíz
+    return root->search(key);
+
 }
 
-void BTree::Delete(BTreeNode* node, int key)
+void BTree::Delete(int key)
 {
-    if (node == nullptr)
-    {
-        node = root;
-    }
-
-    int i = 0;
-    while (i < node->n && key > node->keys[i].first)
-    {
-        i++;
-    }
-
-    if (node->leaf)
-    {
-        if (i < node->n && key == node->keys[i].first)
-        {
-            for (int j = i; j < node->n - 1; j++)
-            {
-                node->keys[j] = node->keys[j + 1];
-            }
-            node->n -= 1;
-            std::cout << "Se eliminó el registro " << key << " con éxito." << std::endl;
-            return;
-        }
-        else
-        {
-            std::cout << "No se encontró el nodo" << std::endl;
-            return;
-        }
-    }
-
-    // Si la clave está en este nodo
-    if (i < node->n && node->keys[i].first == key)
-    {
-        node->delete_internal_node(node, key, i, root);
+    if (!root) {
+        std::cout << "\n\t\tEl arbol esta vacío. No se puede eliminar ninguna clave" << std::endl;
         return;
     }
 
-    // Si la clave no está en este nodo y este nodo no es una hoja, descendemos al hijo apropiado
-    if (node->children[i]->n >= t)
-    {
-        Delete(node->children[i], key);
+    root->Delete(key, root);
+
+    if (root->n == 0) {
+        BTreeNode* tmp = root;
+        if (root->leaf) {
+            root = nullptr;
+        }
+        else {
+            root = root->children[0];
+        }
+        delete tmp;
     }
-    else
-    {
-        // Manejar casos de fusionar o dividir nodos hermanos
-        if (i != 0 && i + 1 < node->children.size())
-        {
-            if (node->children[i - 1]->n >= t)
-            {
-                node->delete_sibling(node, i, i - 1);
-            }
-            else if (node->children[i + 1]->n >= t)
-            {
-                node->delete_sibling(node, i, i + 1);
-            }
-            else
-            {
-                node->delete_merge(node, i, i + 1, root);
-            }
-        }
-        else if (i == 0)
-        {
-            if (node->children[i + 1]->n >= t)
-            {
-                node->delete_sibling(node, i, i + 1);
-            }
-            else
-            {
-                node->delete_merge(node, i, i + 1, root);
-            }
-        }
-        else if (i + 1 == node->children.size())
-        {
-            if (node->children[i - 1]->n >= t)
-            {
-                node->delete_sibling(node, i, i - 1);
-            }
-            else
-            {
-                node->delete_merge(node, i - 1, i, root);
-            }
-        }
-        // Después de fusionar o dividir nodos hermanos, descendemos al hijo apropiado para continuar la eliminación
-        Delete(node->children[i], key);
+}
+
+bool BTree::isExisting(int key)
+{
+    if (root == nullptr) {
+        return false;
     }
+    // Llama al método search de la raíz
+    return root->isExisting(key);
+
 }
