@@ -18,7 +18,7 @@ void BTreeNode::traverse()
         // recorre el subárbol enraizado con el hijo children[i].
         if (!leaf)
             children[i]->traverse();
-        std::cout << " " << keys[i];
+        std::cout << " " << keys[i].first;
     }
 
     // Imprime el subárbol enraizado con el último hijo
@@ -37,20 +37,20 @@ void BTreeNode::insertNonFull(int k)
         // El siguiente bucle hace dos cosas:
         // a) Encuentra la ubicación de la nueva clave a insertar
         // b) Mueve todas las claves mayores un lugar hacia adelante
-        while (i >= 0 && keys[i] > k)
+        while (i >= 0 && keys[i].first > k)
         {
             keys[i + 1] = keys[i];
             i--;
         }
 
         // Inserta la nueva clave en la ubicación encontrada
-        keys[i + 1] = k;
+        keys[i + 1].first = k;
         n = n + 1;
     }
     else
     { // Si este nodo no es hoja
         // Encuentra el hijo que va a tener la nueva clave
-        while (i >= 0 && keys[i] > k)
+        while (i >= 0 && keys[i].first > k)
             i--;
 
         // Ver si el hijo encontrado está lleno
@@ -61,7 +61,7 @@ void BTreeNode::insertNonFull(int k)
 
             // Después de dividir, la clave del medio de children[i] sube y children[i]
             // se divide en dos. Ver cuál de los dos va a tener la nueva clave
-            if (keys[i + 1] < k)
+            if (keys[i + 1].first < k)
                 i++;
         }
         children[i + 1]->insertNonFull(k);
@@ -144,11 +144,11 @@ void BTreeNode::delete_merge(BTreeNode* node, int i, int j, BTreeNode*& root)
     }
 }
 
-int BTreeNode::delete_predecessor(BTreeNode* node, BTreeNode*& root)
+std::pair<int, size_t> BTreeNode::delete_predecessor(BTreeNode* node, BTreeNode*& root)
 {
     if (node->leaf)
     {
-        int temp = node->keys[node->n - 1];
+        std::pair<int, size_t> temp = node->keys[node->n - 1];
         node->keys.pop_back();
         node->n -= 1;
         return temp;
@@ -166,11 +166,11 @@ int BTreeNode::delete_predecessor(BTreeNode* node, BTreeNode*& root)
     return delete_predecessor(node->children[n], root);
 }
 
-int BTreeNode::delete_successor(BTreeNode* node, BTreeNode*& root)
+std::pair<int, size_t> BTreeNode::delete_successor(BTreeNode* node, BTreeNode*& root)
 {
     if (node->leaf)
     {
-        int temp = node->keys[0];
+        std::pair<int, size_t> temp = node->keys[0];
         node->keys.erase(node->keys.begin());
         node->n -= 1;
         return temp;
@@ -222,20 +222,20 @@ void BTreeNode::delete_internal_node(BTreeNode* node, int key, int index, BTreeN
 {
     if (node->leaf)
     {
-        if (node->keys[index] == key)
+        if (node->keys[index].first == key)
         {
             for (int j = index; j < node->n - 1; j++)
             {
                 node->keys[j] = node->keys[j + 1];
             }
             node->n -= 1;
-            std::cout << "Se eliminó el registro " << key << " con éxito." << std::endl;
+            //std::cout << "Se eliminó el registro " << key << " con éxito." << std::endl;
             return;
         }
     }
 
     int i = 0;
-    while (i < node->n && key > node->keys[i])
+    while (i < node->n && key > node->keys[i].first)
     {
         i++;
     }

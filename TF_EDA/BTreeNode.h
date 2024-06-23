@@ -4,11 +4,11 @@
 
 class BTreeNode
 {
-    int t;                        // Grado mínimo (define el rango de número de claves)
-    std::vector<int> keys;             // Vector de claves
-    std::vector<BTreeNode*> children; // Vector de punteros a los hijos
-    int n;                        // Número actual de claves
-    bool leaf;                    // Es verdadero cuando el nodo es hoja
+    int t;                                          // Grado mínimo (define el rango de número de claves)
+    std::vector<std::pair<int, size_t>> keys;       // Vector de claves
+    std::vector<BTreeNode*> children;               // Vector de punteros a los hijos
+    int n;                                          // Número actual de claves
+    bool leaf;                                      // Es verdadero cuando el nodo es hoja
 
 public:
     BTreeNode(int _t, bool _leaf);
@@ -24,9 +24,9 @@ public:
 
     void delete_internal_node(BTreeNode* node, int key, int index, BTreeNode*& root);
 
-    int delete_predecessor(BTreeNode* node, BTreeNode*& root);
+    std::pair<int, size_t> delete_predecessor(BTreeNode* node, BTreeNode*& root);
 
-    int delete_successor(BTreeNode* node, BTreeNode*& root);
+    std::pair<int, size_t> delete_successor(BTreeNode* node, BTreeNode*& root);
 
     void delete_sibling(BTreeNode* node, int i, int j);
 

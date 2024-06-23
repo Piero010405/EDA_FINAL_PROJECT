@@ -5,21 +5,13 @@ class BTree
     BTreeNode* root;
     int t; // Grado mínimo
 public:
-    BTree(int _t)
-    {
-        root = nullptr;
-        t = _t;
-    }
+    BTree(int _t);
 
-    void traverse()
-    {
-        if (root != nullptr)
-            root->traverse();
-    }
+    void traverse();
 
-    void insert(int k);
+    void insert(int k, size_t t);
 
-    void search(int key, BTreeNode* node);
+    std::pair<int, size_t> search(int key, BTreeNode* node);
 
     void Delete(BTreeNode* node, int key);
 };

@@ -1,14 +1,25 @@
 #include "Btree.h"
 
-void BTree::insert(int k)
+BTree::BTree(int _t) {
+    root = nullptr;
+    t = _t;
+}
+
+void BTree::traverse()
+{
+    if (root != nullptr)
+        root->traverse();
+}
+
+void BTree::insert(int k, size_t t)
 {
     // Si el árbol está vacío
     if (root == nullptr)
     {
         // Asigna memoria para la raíz
         root = new BTreeNode(t, true);
-        root->keys[0] = k; // Inserta la clave
-        root->n = 1;       // Actualiza el número de claves en la raíz
+        root->keys[0] = {k, t}; // Inserta la clave
+        root->n = 1;            // Actualiza el número de claves en la raíz
     }
     else
     { // Si el árbol no está vacío
@@ -27,7 +38,7 @@ void BTree::insert(int k)
             // La nueva raíz tiene dos hijos ahora. Decide cuál de los
             // dos hijos va a tener la nueva clave
             int i = 0;
-            if (s->keys[0] < k)
+            if (s->keys[0].first < k)
                 i++;
             s->children[i]->insertNonFull(k);
 
@@ -41,25 +52,26 @@ void BTree::insert(int k)
     }
 }
 
-void BTree::search(int key, BTreeNode* node)
+std::pair<int, size_t> BTree::search(int key, BTreeNode* node)
 {
     if (node == nullptr)
     {
         node = root;
     }
     int i = 0;
-    while (i < node->n && key > node->keys[i])
+    while (i < node->n && key > node->keys[i].first)
     {
         i += 1;
     }
-    if (i < node->n && key == node->keys[i])
+    if (i < node->n && key == node->keys[i].first)
     {
-        std::cout << "Se encontró el nodo" << std::endl;
+        //std::cout << "Se encontró el nodo" << std::endl;
+        return node->keys[i];
     }
     else if (node->leaf)
     {
-        std::cout << "No se encontró el nodo" << std::endl;
-        return;
+        //std::cout << "No se encontró el nodo" << std::endl;
+        return {-1, 0};
     }
     else
     {
@@ -75,14 +87,14 @@ void BTree::Delete(BTreeNode* node, int key)
     }
 
     int i = 0;
-    while (i < node->n && key > node->keys[i])
+    while (i < node->n && key > node->keys[i].first)
     {
         i++;
     }
 
     if (node->leaf)
     {
-        if (i < node->n && key == node->keys[i])
+        if (i < node->n && key == node->keys[i].first)
         {
             for (int j = i; j < node->n - 1; j++)
             {
@@ -100,7 +112,7 @@ void BTree::Delete(BTreeNode* node, int key)
     }
 
     // Si la clave está en este nodo
-    if (i < node->n && node->keys[i] == key)
+    if (i < node->n && node->keys[i].first == key)
     {
         node->delete_internal_node(node, key, i, root);
         return;
