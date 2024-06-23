@@ -1,16 +1,41 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <fstream>
+#include <iostream>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/utility.hpp>
+
+namespace boost {
+    namespace serialization {
+        template<class Archive>
+        void serialize(Archive& ar, std::pair<int, size_t>& p, const unsigned int version) {
+            ar& p.first;
+            ar& p.second;
+        }
+    }
+}
 
 class BTreeNode
 {
+public:
     int t;                                          // Grado mínimo (define el rango de número de claves)
     std::vector<std::pair<int, size_t>> keys;       // Vector de claves
     std::vector<BTreeNode*> children;               // Vector de punteros a los hijos
     int n;                                          // Número actual de claves
     bool leaf;                                      // Es verdadero cuando el nodo es hoja
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version) {
+        ar& t& keys& children& n& leaf;
+    }
 
-public:
+    BTreeNode() = default;
+
     BTreeNode(int _t, bool _leaf);
 
     // Función para recorrer todos los nodos en un subárbol enraizado con este nodo

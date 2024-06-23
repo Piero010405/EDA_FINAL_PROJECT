@@ -1,7 +1,13 @@
 #include "Btree.h"
+#include "BTreeNode.h"
 
 BTree::BTree(int _t) {
     root = nullptr;
+    t = _t;
+}
+
+BTree::BTree(BTreeNode root, int _t) {
+    root = root;
     t = _t;
 }
 

@@ -18,12 +18,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CuckooHash.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Ciudadano.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Ciudadano.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,16 +30,37 @@
     <ClCompile Include="Utilidades.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Btree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ciudadano.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CuckooHash.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BTreeNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constantes.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Btree.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utilidades.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Constantes.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Funciones.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilidades.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BTreeNode.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

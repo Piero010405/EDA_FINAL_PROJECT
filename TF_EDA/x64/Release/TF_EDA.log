@@ -1,10 +1,46 @@
-﻿  Main.cpp
-x64\Release\CuckooHash.obj : warning LNK4042: object specified more than once; extras ignored
-x64\Release\Ciudadano.obj : warning LNK4042: object specified more than once; extras ignored
-     Creating library C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\x64\Release\TF_EDA.lib and object C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\x64\Release\TF_EDA.exp
-  Generating code
-  2 of 2277 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    4 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  TF_EDA.vcxproj -> C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\x64\Release\TF_EDA.exe
+﻿  Btree.cpp
+  BTreeNode.cpp
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(20,30): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(30,42): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(177,29): error C2039: 'GetRoot': is not a member of 'BTree'
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(177,5): error C3861: 'SerializeBTreeNode': identifier not found
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(174,92): error C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(189,57): error C2039: 'GetMinimunDegree': is not a member of 'BTree'
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(189,23): error C3861: 'DeserializeBTreeNode': identifier not found
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(190,10): error C2039: 'SetRoot': is not a member of 'BTree'
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Btree.cpp(186,92): error C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664: 'std::basic_ostream<char,std::char_traits<char>> &std::basic_ostream<char,std::char_traits<char>>::write(const _Elem *,std::streamsize)': cannot convert argument 1 from '_Ty' to 'const _Elem *'
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         with
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         [
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:             _Elem=char
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         ]
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         and
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         [
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:             _Ty=std::pair<int,size_t>
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         ]
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         and
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         [
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:             _Elem=char
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(269,17): error C2664:         ]
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664: 'std::basic_istream<char,std::char_traits<char>> &std::basic_istream<char,std::char_traits<char>>::read(_Elem *,std::streamsize)': cannot convert argument 1 from '_Ty' to '_Elem *'
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         with
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         [
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:             _Elem=char
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         ]
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         and
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         [
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:             _Ty=std::pair<int,size_t>
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         ]
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         and
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         [
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:             _Elem=char
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\BTreeNode.cpp(291,16): error C2664:         ]
+  Ciudadano.cpp
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Ciudadano.cpp(37,18): warning C4566: character represented by universal-character-name '\u0301' cannot be represented in the current code page (1252)
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\Ciudadano.cpp(38,18): warning C4566: character represented by universal-character-name '\u0301' cannot be represented in the current code page (1252)
+  CuckooHash.cpp
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\CuckooHash.cpp(32,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\CuckooHash.cpp(34,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\TF_EDA\CuckooHash.cpp(45,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  CuckooHash.h
+  Main.cpp

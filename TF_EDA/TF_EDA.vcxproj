@@ -137,15 +137,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Btree.cpp" />
+    <ClCompile Include="BTreeNode.cpp" />
     <ClCompile Include="Ciudadano.cpp" />
     <ClCompile Include="CuckooHash.cpp" />
     <ClCompile Include="CuckooHash.h" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Ciudadano.h" />
     <ClCompile Include="Funciones.cpp" />
+    <ClCompile Include="Serialization.cpp" />
     <ClCompile Include="Utilidades.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Btree.h" />
+    <ClInclude Include="BTreeNode.h" />
     <ClInclude Include="Constantes.h" />
     <ClInclude Include="Funciones.h" />
     <ClInclude Include="Utilidades.h" />
