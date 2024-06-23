@@ -35,32 +35,19 @@ public:
     }
 
     BTreeNode() = default;
-
     BTreeNode(int _t, bool _leaf);
+    ~BTreeNode(); // Destructor para liberar memoria
 
-    // Función para recorrer todos los nodos en un subárbol enraizado con este nodo
     void traverse();
-
-    // Función para insertar una nueva clave en el subárbol enraizado con este nodo
-    void insertNonFull(int k);
-
-    // Función para dividir el hijo y de este nodo. i es el índice de y en el vector children
+    void insertNonFull(int k, size_t t);
     void splitChild(int i, BTreeNode* y);
-
     void delete_internal_node(BTreeNode* node, int key, int index, BTreeNode*& root);
-
     std::pair<int, size_t> delete_predecessor(BTreeNode* node, BTreeNode*& root);
-
     std::pair<int, size_t> delete_successor(BTreeNode* node, BTreeNode*& root);
-
     void delete_sibling(BTreeNode* node, int i, int j);
-
     void delete_merge(BTreeNode* node, int i, int j, BTreeNode*& root);
-
     std::pair<int, size_t> search(int id);
-
     bool isExisting(int id);
-
     void Delete(int id, BTreeNode* root);
 
     friend class BTree;

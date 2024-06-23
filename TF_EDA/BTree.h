@@ -5,19 +5,17 @@ class BTree
 public:
     BTreeNode* root;
     int t;              // Grado mínimo
+    
     BTree(int _t);
-
     BTree(BTreeNode* root, int _t);
+    ~BTree();
+
 
     void traverse();
-
-    void insert(int k, size_t t);
-
     std::pair<int, size_t> search(int key);
-
-    void Delete(int key);
-
     bool isExisting(int key);
+    void insert(int k, size_t t);
+    void Delete(int key);
 
     friend class boost::serialization::access;
     template<class Archive>
