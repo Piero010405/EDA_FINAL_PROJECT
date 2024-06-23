@@ -310,8 +310,8 @@ void insertarCiudadano(CuckooHashTable& cuckooTable, std::string ciudadanosFileN
 }
 
 void menuPrincipal() {
-    const std::string ciudadanosFileName = "ciudadanosFile.dat";
-    const std::string cuckooFileName = "cuckooFile.dat";
+    const std::string ciudadanosFileName = CIUDADANOS_FILE_NAME;
+    const std::string cuckooFileName = CUCKOO_HASH_FILE_NAME;
 
     // falta poner con punteros
     CuckooHashTable cuckooTable = cargarDatos(ciudadanosFileName, cuckooFileName);
