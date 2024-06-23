@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+#include <unordered_set>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
@@ -26,8 +27,20 @@ BTree generarCiudadanosYBTree(int poblacionSize, const std::string& ciudadanosFi
     // Crear el BTree
     BTree btree = BTree(GRADO_MINIMO);
 
-    for (int i = 1; i <= poblacionSize; ++i) {
-        Ciudadano ciudadano(i);
+    // Set para validar que los DNI son únicos
+    std::unordered_set<int> dniSet;
+
+
+    for (int i = 0; i < poblacionSize; ++i) {
+        // Generar DNI únicos
+        int randomId;
+        do
+        {
+            randomId = generarDNIAleatorio();
+        } while (dniSet.find(randomId) != dniSet.end());
+        dniSet.insert(randomId);
+
+        Ciudadano ciudadano(randomId);
         // Serializar ciudadano en un stream
         std::stringstream ss;
         {

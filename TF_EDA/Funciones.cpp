@@ -78,6 +78,14 @@ extern std::string generarDNI(int id) {
     return ss.str();
 }
 
+extern int generarDNIAleatorio() {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, 99999999);
+
+    return dis(gen);
+}
+
 extern std::string generarTelefono()
 {
     std::string tel = "9";

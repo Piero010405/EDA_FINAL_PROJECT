@@ -20,5 +20,6 @@ std::string generarDNI(int id);
 std::string generarTelefono();
 std::string generarEmail(const std::string& nombre, const std::string& apellido);
 std::pair<std::vector<std::string>, std::string> generarInformacionBasica(const std::string& nacionalidad);
+int generarDNIAleatorio();
 
 #include "Utilidades.h"
