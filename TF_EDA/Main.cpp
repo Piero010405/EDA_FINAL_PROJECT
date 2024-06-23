@@ -185,7 +185,7 @@ void eliminarCiudadano(BTree& btree, std::string ciudadanosFileName) {
         std::cout << "\t\tEstas seguro de eliminar al ciudadano? [si/no]: ";
         std::getline(std::cin, rpt);
         if (toLowerCase(rpt) == POSITIVO) {
-            btree.Delete(formatearDni(dni));
+            btree.Delete(btree.root, formatearDni(dni));
             std::cout << "\t\tCiudadano con DNI [" << dni << "] ha sido eliminado satisfactoriamente ...\n";
         }
         else {

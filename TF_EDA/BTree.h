@@ -15,7 +15,7 @@ public:
     std::pair<int, size_t> search(int key);
     bool isExisting(int key);
     void insert(int k, size_t t);
-    void Delete(int key);
+    void Delete(BTreeNode* node, int key);
 
     friend class boost::serialization::access;
     template<class Archive>
