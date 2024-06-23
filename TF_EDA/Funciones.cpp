@@ -31,9 +31,11 @@ extern std::string obtenerDniValido() {
     std::string dni;
     bool esValido = false;
 
+    std::cin.ignore();
     while (!esValido) {
         std::cout << "\t\tIngresar el DNI a buscar (8 dígitos): ";
-        std::cin.ignore();
+        std::cin.clear(); // Limpia el estado de cin
+        std::cin.sync();  // Limpia el buffer de entrada
         std::getline(std::cin, dni);
 
         if (dni.length() == 8 && std::all_of(dni.begin(), dni.end(), ::isdigit)) {
@@ -45,7 +47,6 @@ extern std::string obtenerDniValido() {
     }
     return dni;
 }
-
 
 extern int getRandom(std::vector<std::string> arr)
 {

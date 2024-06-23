@@ -244,7 +244,7 @@ void insertarNuevoCiudadano(BTree& btree, std::string& ciudadanosFileName) {
     }
 
     std::string nombre;
-    std::vector<std::string> apellidos;
+    std::vector<std::string> apellidos(2); // Inicializamos el vector de apellidos con dos elementos.
     std::string nacionalidad;
     std::string lugarNacimiento;
     std::string direccion;
