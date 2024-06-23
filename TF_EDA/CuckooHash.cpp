@@ -1,5 +1,7 @@
 #include "CuckooHash.h"
 
+std::vector<std::pair<int, size_t>> TUPLES_NOT_INSERTED;
+
 int hashFunction0(int clave, int size)
 {
     return clave % size;
@@ -25,8 +27,22 @@ int hashFunction4(int clave, int hashSeed, int size)
     return ((clave ^ (clave >> 8) ^ (clave >> 16)) ^ hashSeed) % size;
 }
 
+std::vector<int> shuffle(std::vector<int> vec)
+{
+    srand(time(NULL));
+    std::vector<int> svec = vec;
+    int len = svec.size();
+    for (int i = 0; i < len; ++i)
+    {
+        int tmp = (rand() % (len - 1 - 0 + 1)) + 0;
+        std::swap(svec[i], svec[tmp]);
+    }
+    return svec;
+}
+
 CuckooHashTable::CuckooHashTable(int numTables, int size) : numTables(numTables), size(size), numElements(0)
 {
+    srand(time(NULL));
     tables.resize(numTables);
     hashSeeds.resize(numTables);
 
@@ -38,7 +54,6 @@ CuckooHashTable::CuckooHashTable(int numTables, int size) : numTables(numTables)
     {
         tables[i].resize(size, { -1, 0 });
         hashSeeds[i].resize(numberHashesPerTable);
-        // Insertando n Hash Seed por cada tabla
         for (int j = 0; j < numberHashesPerTable; ++j)
         {
             hashSeeds[i][j] = dis(gen);
@@ -46,8 +61,23 @@ CuckooHashTable::CuckooHashTable(int numTables, int size) : numTables(numTables)
     }
 }
 
+std::vector<int> CuckooHashTable::getTablesIndex()
+{
+    std::vector<int> tablesIndex;
+    for (int i = 0; i < numTables; i++)
+    {
+        tablesIndex.push_back(i);
+    }
+    return tablesIndex;
+}
+
 int CuckooHashTable::hashFunction(int clave, int tableIndex, int hashSeedIndex)
 {
+    if (hashSeedIndex < 0 || hashSeedIndex >= numberHashesPerTable)
+    {
+        throw std::out_of_range("hashSeedIndex fuera de rango");
+    }
+
     switch (hashSeedIndex)
     {
     case 0:
@@ -80,12 +110,7 @@ void CuckooHashTable::validarredimensionar()
 void CuckooHashTable::redimensionar()
 {
     int newSize = size * 2;
-    std::vector<std::vector<std::pair<int, size_t>>> newTables(numTables);
-
-    for (int i = 0; i < numTables; i++)
-    {
-        newTables[i].resize(newSize, { -1, 0 });
-    }
+    std::vector<std::vector<std::pair<int, size_t>>> newTables(numTables, std::vector<std::pair<int, size_t>>(newSize, { -1, 0 }));
 
     for (int i = 0; i < numTables; i++)
     {
@@ -93,16 +118,35 @@ void CuckooHashTable::redimensionar()
         {
             if (tables[i][j].first != -1)
             {
-                if (!insertarEnNuevaTabla(newTables, tables[i][j])) // intenta redimensionar sin redimensionar
+                if (!insertarEnNuevaTabla(newTables, tables[i][j]))
                 {
-                    insertarEnOtraTabla(tables[i][j].first, tables[i][j].second, newTables);
+                    insertarIterativoEnOtraTabla(tables[i][j], newTables);
                 }
             }
         }
     }
 
     tables = std::move(newTables);
+    if (TUPLES_NOT_INSERTED.size() > 0)
+    {
+        for (int i = 0; i < TUPLES_NOT_INSERTED.size(); i++)
+        {
+            insertar(TUPLES_NOT_INSERTED[i].first, TUPLES_NOT_INSERTED[i].second, false);
+        }
+    }
+    TUPLES_NOT_INSERTED.clear();
     size = newSize;
+}
+
+void CuckooHashTable::insertar(int clave, size_t memoryAdress, bool notInserted)
+{
+    std::pair<int, size_t> tupla = { clave, memoryAdress };
+    insertarIterativo(tupla);
+    if (notInserted)
+    {
+        numElements++;
+    }
+    validarredimensionar();
 }
 
 bool CuckooHashTable::insertarEnNuevaTabla(std::vector<std::vector<std::pair<int, size_t>>>& newTables, std::pair<int, size_t> tupla)
@@ -111,7 +155,6 @@ bool CuckooHashTable::insertarEnNuevaTabla(std::vector<std::vector<std::pair<int
     {
         for (int j = 0; j < numberHashesPerTable; ++j)
         {
-            // SIZE
             int pos = hashFunction(tupla.first, i, j);
             if (newTables[i][pos].first == -1)
             {
@@ -121,45 +164,26 @@ bool CuckooHashTable::insertarEnNuevaTabla(std::vector<std::vector<std::pair<int
         }
     }
     return false;
-    // throw std::overflow_error("No se pudo insertar en una tabla redimensionada");
-}
-
-void CuckooHashTable::insertar(int clave, size_t memoryAdress)
-{
-    std::pair<int, size_t> tupla = { clave, memoryAdress };
-    insertarRecursivo(tupla, 0);
-    numElements++;
-    validarredimensionar();
-}
-
-void CuckooHashTable::insertarEnOtraTabla(int clave, size_t memoryAdress, std::vector<std::vector<std::pair<int, size_t>>>& other_tables)
-{
-    std::pair<int, size_t> tupla = { clave, memoryAdress };
-    insertarRecursivoEnOtraTabla(tupla, 0, other_tables);
-    numElements++;
-    validarredimensionar();
 }
 
 void CuckooHashTable::insertarRecursivo(std::pair<int, size_t> tupla, int depth)
 {
-    if (depth > log2(size) * numTables)
-        // if (depth > size / log2(size))
+    // if (depth > log2(size) * numTables)
+    if (depth > size / log2(size))
+        // if ((size / log2(size)) * numTables)
     {
         redimensionar();
         insertar(tupla.first, tupla.second);
         return;
     }
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, numTables - 1);
+    std::vector<int> shuffleIndex = shuffle(getTablesIndex());
 
     for (int attempt = 0; attempt < numTables; ++attempt)
     {
-        int i = dis(gen);
+        int i = shuffleIndex[attempt];
         for (int j = 0; j < numberHashesPerTable; ++j)
         {
-            // SIZE
             int pos = hashFunction(tupla.first, i, j);
             if (tables[i][pos].first == -1)
             {
@@ -179,21 +203,18 @@ void CuckooHashTable::insertarRecursivo(std::pair<int, size_t> tupla, int depth)
 
 void CuckooHashTable::insertarRecursivoEnOtraTabla(std::pair<int, size_t> tupla, int depth, std::vector<std::vector<std::pair<int, size_t>>>& other_tables)
 {
-    if (depth > log2(size) * numTables)
-        // if (depth > size / log2(size))
+    // if (depth > log2(size) * numTables)
+    if (depth > size / log2(size))
+        // if ((size / log2(size)) * numTables)
     {
-        redimensionar();
-        insertarEnOtraTabla(tupla.first, tupla.second, other_tables);
+        TUPLES_NOT_INSERTED.push_back(tupla);
         return;
     }
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, numTables - 1);
+    std::vector<int> shuffleIndex = shuffle(getTablesIndex());
 
     for (int attempt = 0; attempt < numTables; ++attempt)
     {
-        int i = dis(gen);
+        int i = shuffleIndex[attempt];
         for (int j = 0; j < numberHashesPerTable; ++j)
         {
             int pos = hashFunction(tupla.first, i, j);
@@ -211,6 +232,95 @@ void CuckooHashTable::insertarRecursivoEnOtraTabla(std::pair<int, size_t> tupla,
         }
     }
     insertarRecursivoEnOtraTabla(tupla, depth + 1, other_tables);
+}
+
+void CuckooHashTable::insertarIterativo(std::pair<int, size_t> tupla)
+{
+    int depth = 0;
+
+    while (true)
+    {
+        // if (depth > log2(size) * numTables)
+        if (depth > size / log2(size))
+            // if ((size / log2(size)) * numTables)
+        {
+            redimensionar();
+            insertar(tupla.first, tupla.second);
+            return;
+        }
+
+        std::vector<int> shuffleIndex = shuffle(getTablesIndex());
+        bool inserted = false;
+
+        for (int attempt = 0; attempt < numTables && !inserted; ++attempt)
+        {
+            int i = shuffleIndex[attempt];
+            for (int j = 0; j < numberHashesPerTable && !inserted; ++j)
+            {
+                int pos = hashFunction(tupla.first, i, j);
+                if (tables[i][pos].first == -1)
+                {
+                    tables[i][pos] = tupla;
+                    inserted = true;
+                }
+                else
+                {
+                    std::swap(tupla, tables[i][pos]);
+                }
+            }
+        }
+
+        if (inserted)
+        {
+            break;
+        }
+
+        ++depth;
+    }
+}
+
+void CuckooHashTable::insertarIterativoEnOtraTabla(std::pair<int, size_t> tupla, std::vector<std::vector<std::pair<int, size_t>>>& other_tables)
+{
+    int depth = 0;
+
+    while (true)
+    {
+        // if (depth > log2(size) * numTables)
+        if (depth > size / log2(size))
+            // if ((size / log2(size)) * numTables)
+        {
+            TUPLES_NOT_INSERTED.push_back(tupla);
+            return;
+        }
+
+        std::vector<int> shuffleIndex = shuffle(getTablesIndex());
+        bool inserted = false;
+
+        for (int attempt = 0; attempt < numTables && !inserted; ++attempt)
+        {
+            int i = shuffleIndex[attempt];
+            for (int j = 0; j < numberHashesPerTable && !inserted; ++j)
+            {
+                int pos = hashFunction(tupla.first, i, j);
+                if (other_tables[i][pos].first == -1)
+                {
+                    other_tables[i][pos] = tupla;
+                    inserted = true;
+                }
+                else
+                {
+                    std::swap(tupla, other_tables[i][pos]);
+                }
+            }
+        }
+
+        if (inserted)
+        {
+            break;
+        }
+
+        ++depth;
+    }
 }
 
 std::pair<int, size_t> CuckooHashTable::buscar(int clave)

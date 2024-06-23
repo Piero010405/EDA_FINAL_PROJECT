@@ -45,13 +45,15 @@ public:
     void validarredimensionar();
     void redimensionar();
     bool insertarEnNuevaTabla(std::vector<std::vector<std::pair<int, size_t>>>& newTables, std::pair<int, size_t> tupla);
-    void insertar(int clave, size_t memoryAdress);
+    void insertar(int clave, size_t memoryAdress, bool notInserted = true);
     void insertarRecursivo(std::pair<int, size_t> tupla, int depth);
-    void insertarEnOtraTabla(int clave, size_t memoryAdress, std::vector<std::vector<std::pair<int, size_t>>>& tables);
     void insertarRecursivoEnOtraTabla(std::pair<int, size_t> tupla, int depth, std::vector<std::vector<std::pair<int, size_t>>>& tables);
+    void insertarIterativo(std::pair<int, size_t> tupla);
+    void insertarIterativoEnOtraTabla(std::pair<int, size_t> tupla, std::vector<std::vector<std::pair<int, size_t>>>& other_tables);
     std::pair<int, size_t> buscar(int clave);
     bool existe(int clave);
     void eliminar(int clave);
     void mostrar();
+    std::vector<int> getTablesIndex();
     ~CuckooHashTable();
 };
