@@ -156,7 +156,7 @@ Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciuda
 }
 
 
-void sobrescribirBTree(const BTree& nuevoBtree, const std::string& btreeFileName, bool btree_is_modified) {
+void sobrescribirBTree(const BTree& nuevoBtree, const std::string& btreeFileName, bool btree_is_modified = true) {
     if (btree_is_modified) {
         SerializeBTree(nuevoBtree, btreeFileName);
     }
