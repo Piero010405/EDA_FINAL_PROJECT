@@ -6,6 +6,7 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+#include <cstdio> 
 #include <unordered_set>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
@@ -353,12 +354,12 @@ void testDeliting(BTree& btree, const std::string btreeFileName) {
     auto endEliminar = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> elapsed_seconds_eliminar = endEliminar - startEliminar;
-    std::cout << "\t\tTiempo de carga de datos de eliminación de BM 500 mill: " << elapsed_seconds_eliminar.count() << "s\n";
+    std::cout << "\t\tTiempo de carga de datos de eliminación de BM 500 mill: [" << elapsed_seconds_eliminar.count() << "s]\n";
     system("pause");
     system("cls");
 }
 
-void searchNCitizens(BTree& btree, int n) {
+void testSearchNCitizens(BTree& btree, int n) {
     int busquedadExitosas = 0;
     std::unordered_set<int> uniqueCitizens;
     std::pair<int, size_t> tmp;
@@ -381,21 +382,78 @@ void searchNCitizens(BTree& btree, int n) {
 
 void testSearch(BTree &btree) {
     std::cout << "\t\t|||| Search Test BenchMarking ||||\n";
-    const std::vector<int> benchMarkingSizes = {100000,200000,300000,400000,500000,600000,700000,800000,900000,1000000,2000000,3000000,4000000,5000000, 10000000};
-    for (int population: benchMarkingSizes) {
+    for (int population: BENCH_MARKING_SIZES) {
         std::cout << "\t\t==> N = " << population << "\n";
         std::cout << "\t\t============================\n";
         auto start = std::chrono::high_resolution_clock::now();
 
-        searchNCitizens(btree, population);
+        testSearchNCitizens(btree, population);
 
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> elapsed_seconds = end - start;
-        std::cout << "\t\tTiempo de Busqueda de " << population << " ciudadanos: " << elapsed_seconds.count() << "s\n";
+        std::cout << "\t\tTiempo de Busqueda de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n";
     }
     system("pause");
     system("cls");
+}
+
+void testInsertOnSameBTree(BTree& btree) {
+
+}
+
+void testInserNCitizens(int population) {
+    std::string ciudadanosFileName = "ciudadanos" + std::to_string(population) + "size.dat";
+    std::string btreeFileName = "btreeTemp" + std::to_string(population) + ".dat";
+
+    // Generar ciudadanos y crear el BTree
+    BTree btree = generarCiudadanosYBTree(population, ciudadanosFileName, btreeFileName);
+
+    // El BTree será liberado al salir del ámbito
+    // 
+    // Eliminar los archivos generados
+    std::remove(ciudadanosFileName.c_str());
+    std::remove(btreeFileName.c_str());
+}
+
+void testInsertBenchMarking() {
+    std::cout << "\t\t|||| Insert Test BenchMarking ||||\n";
+    for (int population : BENCH_MARKING_SIZES) {
+        std::cout << "\t\t==> N = " << population << "\n";
+        std::cout << "\t\t============================\n";
+        auto start = std::chrono::high_resolution_clock::now();
+
+        testInserNCitizens(population);
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::cout << "\t\tTiempo de Inserccion de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n";
+    }
+    system("pause");
+    system("cls");
+}
+
+void testInsert(BTree btree) {
+
+    int opt;
+    do
+    {
+        std::cout << "\t\t|||| Insert Tests ||||\n";
+        std::cout << "\t\t********************\n";
+        std::cout << "\t\t[*] Insert on same BTree .......[1]\n";
+        std::cout << "\t\t[*] BenchMarking .............. [2]\n";
+        std::cout << "\t\t[*] Salir ..................... [3]\n";
+        std::cout << "\t\tSeleccione una opcion         [1-3]: ";
+        std::cin >> opt;
+        switch (opt)
+        {
+        case 1: system("cls"); testInsertOnSameBTree(btree); break;
+        case 2: system("cls"); testInsertBenchMarking(); break;
+        case 3: salir(); break;
+        default: std::cout << "\n\t\tIngrese una opcion válida entre [1-3]\n"; system("pause"); system("cls");
+        }
+    } while (opt != 3);
 }
 
 void menuTests(BTree btree, const std::string btreeFileName) {
@@ -413,7 +471,7 @@ void menuTests(BTree btree, const std::string btreeFileName) {
         std::cin >> opt;
         switch (opt)
         {
-        case 1: system("cls"); testInsert(btree, ciudadanosFileName); break;
+        case 1: system("cls"); testInsert(btree); break;
         case 2: system("cls"); testSearch(btree); break;
         case 3: system("cls"); testDeliting(btree, btreeFileName); break;
         case 4: salir(); break;
