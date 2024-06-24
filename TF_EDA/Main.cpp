@@ -398,11 +398,45 @@ void testSearch(BTree &btree) {
     system("cls");
 }
 
-void testInsertOnSameBTree(BTree& btree) {
+void testInsertNCitizensOnSameBTree(BTree& btree, const std::string ciudadanosFileName, int population) {
+    int inserccionesExitosas = 0;
+    while (inserccionesExitosas < population) {
+        bool valido = false;
+        int id;
+        std::string dni;
+        while (!valido) {
+            dni = obtenerDniValido();
+            id = formatearDni(dni);
+            bool existe = btree.isExisting(id);
+            valido = !existe;
+        }
 
+        Ciudadano obj = Ciudadano(id);
+        insertarCiudadanoEnBinario(obj, ciudadanosFileName, btree);
+        inserccionesExitosas++;
+    }
+    std::cout << "\n\t\t " << population << " ciudadanos insertados exitosamente.\n";
 }
 
-void testInserNCitizens(int population) {
+void testInsertOnSameBTree(BTree& btree, const std::string ciudadanosFileName) {
+    std::cout << "\t\t|||| Insert Test on Same BTree ||||\n";
+    for (int population : INSERT_BENCH_MARKING_SIZES) {
+        std::cout << "\t\t==> N = " << population << "\n";
+        std::cout << "\t\t============================\n";
+        auto start = std::chrono::high_resolution_clock::now();
+
+        testInsertNCitizensOnSameBTree(btree, ciudadanosFileName, population);
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::cout << "\t\tTiempo de Insercion de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n";
+    }
+    system("pause");
+    system("cls");
+}
+
+void testInsertNCitizens(int population) {
     std::string ciudadanosFileName = "ciudadanos" + std::to_string(population) + "size.dat";
     std::string btreeFileName = "btreeTemp" + std::to_string(population) + ".dat";
 
@@ -411,9 +445,9 @@ void testInserNCitizens(int population) {
 
     // El BTree será liberado al salir del ámbito
     // 
-    // Eliminar los archivos generados
-    std::remove(ciudadanosFileName.c_str());
-    std::remove(btreeFileName.c_str());
+    //// Eliminar los archivos generados
+    //std::remove(ciudadanosFileName.c_str());
+    //std::remove(btreeFileName.c_str());
 }
 
 void testInsertBenchMarking() {
@@ -423,7 +457,7 @@ void testInsertBenchMarking() {
         std::cout << "\t\t============================\n";
         auto start = std::chrono::high_resolution_clock::now();
 
-        testInserNCitizens(population);
+        testInsertNCitizens(population);
 
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -434,7 +468,7 @@ void testInsertBenchMarking() {
     system("cls");
 }
 
-void testInsert(BTree btree) {
+void testInsert(BTree btree, const std::string ciudadanosFileName) {
 
     int opt;
     do
@@ -448,7 +482,7 @@ void testInsert(BTree btree) {
         std::cin >> opt;
         switch (opt)
         {
-        case 1: system("cls"); testInsertOnSameBTree(btree); break;
+        case 1: system("cls"); testInsertOnSameBTree(btree, ciudadanosFileName); break;
         case 2: system("cls"); testInsertBenchMarking(); break;
         case 3: salir(); break;
         default: std::cout << "\n\t\tIngrese una opcion válida entre [1-3]\n"; system("pause"); system("cls");
@@ -456,7 +490,7 @@ void testInsert(BTree btree) {
     } while (opt != 3);
 }
 
-void menuTests(BTree btree, const std::string btreeFileName) {
+void menuTests(BTree btree, const std::string btreeFileName, const std::string ciudadanosFileName) {
 
     int opt;
     do
@@ -471,7 +505,7 @@ void menuTests(BTree btree, const std::string btreeFileName) {
         std::cin >> opt;
         switch (opt)
         {
-        case 1: system("cls"); testInsert(btree); break;
+        case 1: system("cls"); testInsert(btree, ciudadanosFileName); break;
         case 2: system("cls"); testSearch(btree); break;
         case 3: system("cls"); testDeliting(btree, btreeFileName); break;
         case 4: salir(); break;
@@ -503,7 +537,7 @@ void menuPrincipal() {
         case 1: system("cls"); buscarCiudadano(btree, ciudadanosFileName); break;
         case 2: system("cls"); eliminarCiudadano(btree, ciudadanosFileName); break;
         case 3: system("cls"); insertarCiudadano(btree, ciudadanosFileName); break;
-        case 4: system("cls"); menuTests(btree, btreeFileName); break;
+        case 4: system("cls"); menuTests(btree, btreeFileName, ciudadanosFileName); break;
         case 5: salir(); sobrescribirBTree(btree, btreeFileName, ARCHIVE_BTREE_IS_MODIFIED); exit(0); break;
         default: std::cout << "\n\t\tIngrese una opcion válida entre [1-4]\n"; system("pause"); system("cls");
         }
