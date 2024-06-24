@@ -88,12 +88,10 @@ void BTree::Delete(BTreeNode* node, int key)
                 node->keys[j] = node->keys[j + 1];
             }
             node->n -= 1;
-            std::cout << "\n\t\tSe eliminó el registro " << key << " con éxito." << std::endl;
             return;
         }
         else
         {
-            std::cout << "\n\t\tNo se encontró el nodo" << std::endl;
             return;
         }
     }

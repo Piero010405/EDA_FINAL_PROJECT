@@ -13,12 +13,15 @@
 #include <boost/serialization/string.hpp>
 #include <boost/interprocess/file_mapping.hpp>
 #include <boost/interprocess/mapped_region.hpp>
+#include <chrono>
 #include "Ciudadano.h"
 #include "BTree.h"
 #include "Funciones.h"
 #include "Utilidades.h"
 #include "Constantes.h"
 #include "Serialization.h"
+
+bool ARCHIVE_BTREE_IS_MODIFIED = false;
 
 BTree generarCiudadanosYBTree(int poblacionSize, const std::string& ciudadanosFileName, const std::string& btreeFileName) {
     // Crear archivo para ciudadanos
@@ -56,6 +59,9 @@ BTree generarCiudadanosYBTree(int poblacionSize, const std::string& ciudadanosFi
 
         // Insertar en la btree
         btree.insert(ciudadano.getId(), memoryAddress);
+        if (!ARCHIVE_BTREE_IS_MODIFIED) {
+            ARCHIVE_BTREE_IS_MODIFIED = true;
+        }
     }
 
     // Serializar la tabla hash
@@ -107,6 +113,9 @@ void insertarCiudadanoEnBinario(Ciudadano& nuevoCiudadano, const std::string& ci
 
     // Insertar en la btree
     btree.insert(nuevoCiudadano.getId(), memoryAddress);
+    if (!ARCHIVE_BTREE_IS_MODIFIED) {
+        ARCHIVE_BTREE_IS_MODIFIED = true;
+    }
 
     ofsCiudadanos.close();
 }
@@ -147,8 +156,10 @@ Ciudadano buscarCiudadanoPorDNI(const std::string& dni, const std::string& ciuda
 }
 
 
-void sobrescribirBTree(const BTree& nuevoBtree, const std::string& btreeFileName) {
-    SerializeBTree(nuevoBtree, btreeFileName);
+void sobrescribirBTree(const BTree& nuevoBtree, const std::string& btreeFileName, bool btree_is_modified) {
+    if (btree_is_modified) {
+        SerializeBTree(nuevoBtree, btreeFileName);
+    }
 }
 
 
@@ -186,6 +197,9 @@ void eliminarCiudadano(BTree& btree, std::string ciudadanosFileName) {
         std::getline(std::cin, rpt);
         if (toLowerCase(rpt) == POSITIVO) {
             btree.Delete(btree.root, formatearDni(dni));
+            if (!ARCHIVE_BTREE_IS_MODIFIED) {
+                ARCHIVE_BTREE_IS_MODIFIED = true;
+            }
             std::cout << "\t\tCiudadano con DNI [" << dni << "] ha sido eliminado satisfactoriamente ...\n";
         }
         else {
@@ -312,6 +326,36 @@ void insertarCiudadano(BTree& btree, std::string ciudadanosFileName) {
 
 }
 
+void BMEliminar1M(BTree& btree) {
+    int eliminacionesExitosas = 0;
+    while (eliminacionesExitosas < 500000) {
+        int dni = generarDNIAleatorio();
+        if (!btree.isExisting(dni)) {
+            continue; // Saltar esta iteración si el DNI no existe
+        }
+        btree.Delete(btree.root, dni);
+        eliminacionesExitosas++; // Incrementar solo después de una eliminación exitosa
+    }
+    std::cout << "\t\t500,000 ciudadanos eliminados exitosamente.\n";
+}
+
+void testDeliting(BTree& btree, const std::string btreeFileName) {
+    auto startEliminar = std::chrono::high_resolution_clock::now();
+
+    BMEliminar1M(btree);
+
+    // Medimos el costo de esta operacion guardando en disco
+    sobrescribirBTree(btree, btreeFileName);
+    if (ARCHIVE_BTREE_IS_MODIFIED) {
+        ARCHIVE_BTREE_IS_MODIFIED = false;
+    }
+
+    auto endEliminar = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> elapsed_seconds_eliminar = endEliminar - startEliminar;
+    std::cout << "\t\tTiempo de carga de datos de eliminación de BM 1 millón: " << elapsed_seconds_eliminar.count() << "s\n";
+}
+
 void menuPrincipal() {
     const std::string ciudadanosFileName = CIUDADANOS_FILE_NAME;
     const std::string btreeFileName = BTREE_FILE_NAME;
@@ -326,18 +370,20 @@ void menuPrincipal() {
         std::cout << "\t\t[*] Buscar Ciudadano .............. [1]\n";
         std::cout << "\t\t[*] Eliminar Ciudadano ............ [2]\n";
         std::cout << "\t\t[*] Insertar Nuevo Ciudadano ...... [3]\n";
-        std::cout << "\t\t[*] Salir ......................... [4]\n";
-        std::cout << "\t\tSeleccione una opcion             [1-4]: ";
+        std::cout << "\t\t[*] Tests ......................... [4]\n";
+        std::cout << "\t\t[*] Salir ......................... [5]\n";
+        std::cout << "\t\tSeleccione una opcion             [1-5]: ";
         std::cin >> opt;
         switch (opt)
         {
         case 1: system("cls"); buscarCiudadano(btree, ciudadanosFileName); break;
         case 2: system("cls"); eliminarCiudadano(btree, ciudadanosFileName); break;
         case 3: system("cls"); insertarCiudadano(btree, ciudadanosFileName); break;
-        case 4: salir(); sobrescribirBTree(btree, btreeFileName); exit(0); break;
+        case 4: system("cls"); testDeliting(btree, btreeFileName); break;
+        case 5: salir(); sobrescribirBTree(btree, btreeFileName, ARCHIVE_BTREE_IS_MODIFIED); exit(0); break;
         default: std::cout << "\n\t\tIngrese una opcion válida entre [1-4]\n"; system("pause"); system("cls");
         }
-    } while (opt != 4);
+    } while (opt != 5);
 }
 
 int main() {

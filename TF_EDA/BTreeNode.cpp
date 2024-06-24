@@ -194,24 +194,21 @@ void BTreeNode::delete_internal_node(BTreeNode* node, int key, int index, BTreeN
             node->n -= 1;
             return;
         }
+        return;
     }
-    int i = 0;
-    while (i < node->n && key > node->keys[i].first)
+
+    if (node->children[index]->n >= t)
     {
-        i++;
+        node->keys[index] = delete_predecessor(node->children[index], root);
     }
-    if (node->children[i]->n >= t)
+    else if (node->children[index + 1]->n >= t)
     {
-        node->keys[index] = delete_predecessor(node->children[i], root);
-    }
-    else if (i + 1 < node->children.size() && node->children[i + 1]->n >= t)
-    {
-        node->keys[index] = delete_successor(node->children[i + 1], root);
+        node->keys[index] = delete_successor(node->children[index + 1], root);
     }
     else
     {
-        delete_merge(node, i, i + 1, root);
-        delete_internal_node(node->children[i], key, t - 1, root);
+        delete_merge(node, index, index + 1, root);
+        delete_internal_node(node->children[index], key, t - 1, root);
     }
 }
 

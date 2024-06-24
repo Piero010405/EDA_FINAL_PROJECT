@@ -1,11 +1,12 @@
-﻿  Funciones.cpp
+﻿  BTreeNode.cpp
+  Btree.cpp
 x64\Release\CuckooHash.obj : warning LNK4042: object specified more than once; extras ignored
 x64\Release\Ciudadano.obj : warning LNK4042: object specified more than once; extras ignored
 x64\Release\Serialization.obj : warning LNK4042: object specified more than once; extras ignored
      Creating library C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\x64\Release\TF_EDA.lib and object C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\x64\Release\TF_EDA.exp
   Generating code
-  41 of 2562 functions ( 1.6%) were compiled, the rest were copied from previous compilation.
+  15 of 2575 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    46 functions had inline decision re-evaluated but remain unchanged
+    28 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   TF_EDA.vcxproj -> C:\Users\psarm\Documents\PIERO\USIL\7mo CICLO\ESTRUCTURA DE DATOS AVANZADA\TRABAJO FINAL\EDA_PF\EDA_FINAL_PROJECT\EDA_FINAL_PROJECT\x64\Release\TF_EDA.exe
