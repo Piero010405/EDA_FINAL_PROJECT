@@ -361,23 +361,17 @@ void testDeliting(BTree& btree, const std::string btreeFileName) {
 
 void testSearchNCitizens(BTree& btree, int n) {
     int busquedadExitosas = 0;
-    std::unordered_set<int> uniqueCitizens;
     std::pair<int, size_t> tmp;
-
+   
     while (busquedadExitosas < n) {
-        int randomId;
-        do
-        {
-            randomId = generarDNIAleatorio();
-        } while (uniqueCitizens.find(randomId) != uniqueCitizens.end());
-        uniqueCitizens.insert(randomId);
-
+        
+        int randomId = generarDNIAleatorio();
+        
         tmp = btree.search(randomId);
-        if (tmp.first != -1) {
-            busquedadExitosas++;
-        }
+        busquedadExitosas++;
+
     }
-    std::cout << "\n\t\t " << n << " ciudadanos encontrados exitosamente.\n";
+    std::cout << "\n\t\t " << n << " ciudadanos buscados exitosamente.\n";
 }
 
 void testSearch(BTree &btree) {
@@ -392,7 +386,7 @@ void testSearch(BTree &btree) {
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> elapsed_seconds = end - start;
-        std::cout << "\t\tTiempo de Busqueda de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n";
+        std::cout << "\t\tTiempo de Busqueda de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n\n";
     }
     system("pause");
     system("cls");
@@ -430,7 +424,7 @@ void testInsertOnSameBTree(BTree& btree, const std::string ciudadanosFileName) {
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> elapsed_seconds = end - start;
-        std::cout << "\t\tTiempo de Insercion de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n";
+        std::cout << "\t\tTiempo de Insercion de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n\ns";
     }
     system("pause");
     system("cls");
@@ -462,7 +456,7 @@ void testInsertBenchMarking() {
         auto end = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double> elapsed_seconds = end - start;
-        std::cout << "\t\tTiempo de Inserccion de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n";
+        std::cout << "\t\tTiempo de Inserccion de " << population << " ciudadanos: [" << elapsed_seconds.count() << "s]\n\n";
     }
     system("pause");
     system("cls");
