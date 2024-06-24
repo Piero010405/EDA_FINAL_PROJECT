@@ -353,7 +353,73 @@ void testDeliting(BTree& btree, const std::string btreeFileName) {
     auto endEliminar = std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> elapsed_seconds_eliminar = endEliminar - startEliminar;
-    std::cout << "\t\tTiempo de carga de datos de eliminación de BM 1 millón: " << elapsed_seconds_eliminar.count() << "s\n";
+    std::cout << "\t\tTiempo de carga de datos de eliminación de BM 500 mill: " << elapsed_seconds_eliminar.count() << "s\n";
+    system("pause");
+    system("cls");
+}
+
+void searchNCitizens(BTree& btree, int n) {
+    int busquedadExitosas = 0;
+    std::unordered_set<int> uniqueCitizens;
+    std::pair<int, size_t> tmp;
+
+    while (busquedadExitosas < n) {
+        int randomId;
+        do
+        {
+            randomId = generarDNIAleatorio();
+        } while (uniqueCitizens.find(randomId) != uniqueCitizens.end());
+        uniqueCitizens.insert(randomId);
+
+        tmp = btree.search(randomId);
+        if (tmp.first != -1) {
+            busquedadExitosas++;
+        }
+    }
+    std::cout << "\n\t\t " << n << " ciudadanos encontrados exitosamente.\n";
+}
+
+void testSearch(BTree &btree) {
+    std::cout << "\t\t|||| Search Test BenchMarking ||||\n";
+    const std::vector<int> benchMarkingSizes = {100000,200000,300000,400000,500000,600000,700000,800000,900000,1000000,2000000,3000000,4000000,5000000, 10000000};
+    for (int population: benchMarkingSizes) {
+        std::cout << "\t\t==> N = " << population << "\n";
+        std::cout << "\t\t============================\n";
+        auto start = std::chrono::high_resolution_clock::now();
+
+        searchNCitizens(btree, population);
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        std::cout << "\t\tTiempo de Busqueda de " << population << " ciudadanos: " << elapsed_seconds.count() << "s\n";
+    }
+    system("pause");
+    system("cls");
+}
+
+void menuTests(BTree btree, const std::string btreeFileName) {
+
+    int opt;
+    do
+    {
+        std::cout << "\t\t|||| Menu Tests ||||\n";
+        std::cout << "\t\t********************\n";
+        std::cout << "\t\t[*] Insert Tests .............. [1]\n";
+        std::cout << "\t\t[*] Search Tests .............. [2]\n";
+        std::cout << "\t\t[*] Delete Tests .............. [3]\n";
+        std::cout << "\t\t[*] Salir ..................... [4]\n";
+        std::cout << "\t\tSeleccione una opcion         [1-4]: ";
+        std::cin >> opt;
+        switch (opt)
+        {
+        case 1: system("cls"); testInsert(btree, ciudadanosFileName); break;
+        case 2: system("cls"); testSearch(btree); break;
+        case 3: system("cls"); testDeliting(btree, btreeFileName); break;
+        case 4: salir(); break;
+        default: std::cout << "\n\t\tIngrese una opcion válida entre [1-4]\n"; system("pause"); system("cls");
+        }
+    } while (opt != 4);
 }
 
 void menuPrincipal() {
@@ -379,7 +445,7 @@ void menuPrincipal() {
         case 1: system("cls"); buscarCiudadano(btree, ciudadanosFileName); break;
         case 2: system("cls"); eliminarCiudadano(btree, ciudadanosFileName); break;
         case 3: system("cls"); insertarCiudadano(btree, ciudadanosFileName); break;
-        case 4: system("cls"); testDeliting(btree, btreeFileName); break;
+        case 4: system("cls"); menuTests(btree, btreeFileName); break;
         case 5: salir(); sobrescribirBTree(btree, btreeFileName, ARCHIVE_BTREE_IS_MODIFIED); exit(0); break;
         default: std::cout << "\n\t\tIngrese una opcion válida entre [1-4]\n"; system("pause"); system("cls");
         }
